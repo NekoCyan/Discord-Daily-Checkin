@@ -7,10 +7,12 @@ const eslintConfig = defineConfig([
   js.configs.recommended,
   ...tseslint.configs.recommended,
   globalIgnores([
-    '.dist/**',
+    'dist/**',
   ]),
   {
-    rules: {},
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
   },
 ]);
 
