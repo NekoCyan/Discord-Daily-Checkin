@@ -17,11 +17,6 @@ export default class BotClient extends Client<true> {
    * database or other necessary resources) before accepting interactions or commands.
    */
   isFullyReady: boolean = false;
-  /**
-   * The bot token used for authentication. This is a private
-   * field and should not be accessed directly outside of the class.
-   */
-  token: string = '';
 
   slashCommands = new Collection<string, SlashCommandHandler>();
   slashCommandsRequested = new Collection<string, APIApplicationCommand>();

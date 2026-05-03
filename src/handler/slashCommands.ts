@@ -30,7 +30,7 @@ export default async function slashCommands(
       .catch((err: Error) => err);
 
     // Get the path of the command file relative to the slashCommands directory for logging purposes.
-    const relativePath = getRelativePathFromDir(file, targetDir, slashCommandsPathDir);
+    const relativePath = getRelativePathFromDir(file, slashCommandsPathDir, targetDir);
 
     // Skip the file if it doesn't export a valid SlashCommandHandler.
     if (
@@ -38,6 +38,7 @@ export default async function slashCommands(
       !['status', 'metadata', 'run'].every((x) => Object.keys(slashCommand).includes(x))
     ) {
       logger.warn(
+        { error: slashCommand },
         `Failed to load slash command from ${relativePath}. Ensure it exports a valid SlashCommandHandler with 'status', 'metadata', and 'run' properties.`,
       );
       continue;

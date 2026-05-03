@@ -1,4 +1,8 @@
-import { InteractionContextType, SlashCommandBuilder } from 'discord.js';
+import {
+  ApplicationIntegrationType,
+  InteractionContextType,
+  SlashCommandBuilder,
+} from 'discord.js';
 import { performance } from 'perf_hooks';
 import { SlashCommandHandler } from '../../../types/index.js';
 
@@ -7,10 +11,10 @@ export default {
   metadata: new SlashCommandBuilder()
     .setName('ping')
     .setDescription('Ping pong Command with latency measurement.')
-    .setContexts([
-      InteractionContextType.Guild,
-      InteractionContextType.BotDM,
-      InteractionContextType.PrivateChannel,
+    .setContexts([InteractionContextType.Guild, InteractionContextType.BotDM])
+    .setIntegrationTypes([
+      ApplicationIntegrationType.GuildInstall,
+      ApplicationIntegrationType.UserInstall,
     ]),
   run: async function (interaction) {
     const now = performance.now();

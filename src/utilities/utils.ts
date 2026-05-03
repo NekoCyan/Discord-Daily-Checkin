@@ -8,7 +8,8 @@ import { pathToFileURL } from 'node:url';
  * @returns The absolute file URL as a string.
  */
 export function resolveDynamicImportPath(relativePath: string): string {
-  const resolvedPath = path.resolve(path.dirname(new URL(import.meta.url).pathname), relativePath);
+  const withExt = path.extname(relativePath) ? relativePath : `${relativePath}.js`;
+  const resolvedPath = path.resolve(path.dirname(new URL(import.meta.url).pathname), withExt);
   return pathToFileURL(resolvedPath).href;
 }
 
