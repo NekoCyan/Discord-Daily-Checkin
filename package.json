@@ -1,0 +1,40 @@
+{
+  "name": "endfield-daily-checkin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "tsx test/index.ts",
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint \"src/**/*.ts\" \"types/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" \"types/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"types/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"types/*.ts\"",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "arknights-endfield",
+    "endfield-daily-checkin"
+  ],
+  "author": "NekoCyan",
+  "license": "MIT",
+  "packageManager": "pnpm@10.12.4",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.26.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.0",
+    "eslint": "^10.3.0",
+    "prettier": "^3.8.3",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.1"
+  }
+}
