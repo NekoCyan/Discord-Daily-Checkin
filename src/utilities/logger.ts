@@ -33,6 +33,7 @@ const LEVELS: readonly PinoLevel[] = ['trace', 'debug', 'info', 'warn', 'error',
 const _logger = (logLevel: pino.LevelWithSilentOrString): TrackedLogger => {
   // Map to store start times for tracking keys
   const timerMap = new Map<string, number>();
+  const currentLevelIndex = LEVELS.indexOf(logLevel as PinoLevel);
 
   const base = pino({
     level: logLevel,
@@ -48,6 +49,9 @@ const _logger = (logLevel: pino.LevelWithSilentOrString): TrackedLogger => {
 
   // Helper function to calculate time difference for a given key and return a formatted suffix
   const getDiffSuffix = (key?: string): string => {
+    // Only track for 'trace' and 'debug' levels
+    if (currentLevelIndex >= LEVELS.indexOf('info')) return '';
+
     if (!key) return '';
 
     const now = performance.now();
@@ -55,13 +59,14 @@ const _logger = (logLevel: pino.LevelWithSilentOrString): TrackedLogger => {
 
     if (startTime === undefined) {
       timerMap.set(key, now);
-      return ` \u001b[90m+0ms\u001b[39m`;
+      return ` \u001b[90m[${key}] +0ms\u001b[39m`;
+      // return ` \u001b[90m+0ms\u001b[39m`;
     }
 
     const diff = (now - startTime).toFixed(2);
     timerMap.delete(key);
-    // return ` \u001b[90m[${key}] +${diff}ms\u001b[39m`;
-    return ` \u001b[90m+${diff}ms\u001b[39m`;
+    return ` \u001b[90m[${key}] +${diff}ms\u001b[39m`;
+    // return ` \u001b[90m+${diff}ms\u001b[39m`;
   };
 
   // Create a Proxy to wrap the base logger and intercept calls to level methods
