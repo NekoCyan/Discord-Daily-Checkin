@@ -5,7 +5,6 @@ configDotenv({
 
 import { emitKeypressEvents } from 'node:readline';
 import { fileURLToPath } from 'node:url';
-import { dbDisconnect } from './dbConnect.js';
 import _logger from './logger.js';
 
 // Determine the current file's name and set NODE_ENV based on the file extension
@@ -41,15 +40,5 @@ export default function Loader() {
       logger.info(str);
       process.exit(1);
     }
-  });
-
-  // Graceful shutdown
-  process.on('SIGINT', async () => {
-    await dbDisconnect();
-    process.exit(0);
-  });
-  process.on('SIGTERM', async () => {
-    await dbDisconnect();
-    process.exit(0);
   });
 }

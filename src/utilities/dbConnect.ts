@@ -23,6 +23,10 @@ export async function dbConnect() {
 }
 
 export async function dbDisconnect() {
+  if (mongoose.connection.readyState !== 1) {
+    return; // not connected
+  }
+
   await mongoose.disconnect();
   logger.info('MongoDB disconnected');
 }

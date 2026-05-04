@@ -5,3 +5,4 @@ dist
 *.log
 .git
 data
+test
