@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "tsx test/index.ts",
+    "test": "tsx --tsconfig test/tsconfig.json test/index.ts",
     "dev": "tsx src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
@@ -32,6 +32,7 @@
     "node": ">=22.13.0"
   },
   "dependencies": {
+    "axios": "^1.16.0",
     "discord.js": "^14.26.4",
     "dotenv": "^17.4.2",
     "mongoose": "^8.23.1",

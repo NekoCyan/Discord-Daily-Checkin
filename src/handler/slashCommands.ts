@@ -3,7 +3,7 @@ import path from 'node:path';
 import { SlashCommandHandler } from '../../types/index.js';
 import BotClient from '../BotClient.js';
 import { entryPath } from '../entryPath.js';
-import { getRelativePathFromDir, resolveDynamicImportPath, scanFiles } from '../utilities/utils.js';
+import { getRelativePathFromDir, resolveDynamicImportPath, scanFiles } from '../utilities/Utils.js';
 
 const targetDir = '_slashCommands';
 const slashCommandsPathDir = path.resolve(entryPath, targetDir);

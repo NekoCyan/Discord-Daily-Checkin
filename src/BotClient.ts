@@ -2,7 +2,7 @@ import { APIApplicationCommand, Client, Collection, Options } from 'discord.js';
 import path from 'node:path';
 import { BotClientOptions, SlashCommandHandler } from '../types/index.js';
 import { entryPath } from './entryPath.js';
-import { resolveDynamicImportPath } from './utilities/utils.js';
+import { resolveDynamicImportPath } from './utilities/Utils.js';
 
 const handlerPath = path.resolve(entryPath, './handler');
 const allHandlers = ['events', 'commandRegistration'];

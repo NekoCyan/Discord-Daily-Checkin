@@ -1,4 +1,4 @@
-import Loader from './utilities/loader.js';
+import Loader from './utilities/Loader.js';
 Loader();
 
 import { GatewayIntentBits } from 'discord.js';
