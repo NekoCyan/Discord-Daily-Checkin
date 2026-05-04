@@ -1,0 +1,26 @@
+services:
+  worker:
+    build:
+      context: .
+      target: dev
+    env_file:
+      - .env.development
+    restart: no
+    depends_on:
+      mongo:
+        condition: service_healthy
+  mongo:
+    image: mongo:8
+    restart: no
+    env_file:
+      - .env.development
+    ports:
+      - "27018:27017" # prevent conflict with local MongoDB
+    volumes:
+      - ./data/mongo:/data/db # store data in project workspace
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 3650d # ← effectively never re-runs (10 years)
+      timeout: 5s
+      retries: 5
+      start_period: 10s # ← give mongo time to boot before first check

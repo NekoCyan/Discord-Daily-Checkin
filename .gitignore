@@ -1,7 +1,12 @@
 # Created by https://www.toptal.com/developers/gitignore/api/node
 # Edit at https://www.toptal.com/developers/gitignore?templates=node
 
+/data
 /test
+.env.development
+.env.development.*
+.env.production
+.env.production.*
 
 ### Node ###
 # Logs
