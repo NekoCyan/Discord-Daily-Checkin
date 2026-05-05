@@ -504,6 +504,7 @@ class EndfieldService extends BaseService {
       isTodayChecked: attendance.hasToday,
       todayRewards: todayRewards,
       tomorrowRewards: tmrRewards,
+      currentDay: todayIndex + 1,
       nextDayTimestamp: moment.add(1, 'day').valueOf(),
     };
   }
