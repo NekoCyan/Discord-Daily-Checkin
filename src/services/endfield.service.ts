@@ -16,7 +16,7 @@ class EndfieldService extends BaseService {
   cred: string = '';
   oAuthCode: string = '';
   token: string = '';
-  binding: string = '';
+  binding: PlayerBinding | null = null;
 
   constructor(options?: EndfieldServiceOptions) {
     super();
@@ -34,11 +34,14 @@ class EndfieldService extends BaseService {
       VNAME: '1.0.0',
       ENDFIELD_GAME_ID: '3',
       URLS: {
+        THIRD_PARTY_INFO: 'https://as.gryphline.com/user/info/v1/third_party',
         GRANT: 'https://as.gryphline.com/user/oauth2/v2/grant',
         GENERATE_CRED: 'https://zonai.skport.com/web/v1/user/auth/generate_cred_by_code',
         REFRESH_TOKEN: 'https://zonai.skport.com/web/v1/auth/refresh',
         BINDING: 'https://zonai.skport.com/api/v1/game/player/binding',
         ATTENDANCE: 'https://zonai.skport.com/web/v1/game/endfield/attendance',
+        USER_CHECK: 'https://zonai.skport.com/web/v1/user/check',
+        USER_INFO: 'https://zonai.skport.com/web/v2/user',
       },
     };
   }
@@ -69,21 +72,65 @@ class EndfieldService extends BaseService {
   }
 
   /**
-   * Get the OAuth code using the account token to grypline's API, then
+   * Get the player binding code for Endfield game in the format of `${gameId}_${roleId}_${serverId}`.
+   */
+  get bindingCode() {
+    if (!this.binding)
+      throw this.error(
+        'Player binding is not set. Please call getPlayerBinding() first to retrieve and set the binding information.',
+      );
+
+    const endfieldApp = this.binding.list.find((app) => app.appCode === 'endfield');
+    if (!endfieldApp || !endfieldApp.bindingList || endfieldApp.bindingList.length === 0) {
+      throw this.error('No valid player binding found for Endfield game.', {
+        binding: this.binding,
+      });
+    }
+    const binding = endfieldApp.bindingList[0];
+    const role = binding?.defaultRole ?? binding?.roles?.[0];
+
+    if (!role)
+      throw this.error('No valid role found in Endfield binding.', {
+        role: role,
+      });
+
+    return `${this.Constants.ENDFIELD_GAME_ID}_${role.roleId}_${role.serverId}`;
+  }
+
+  async IsValidAccountToken() {
+    if (!this.#accountToken) throw this.error('Account token is required to perform this action.');
+
+    const res = await newAxiosInstance().get<ThirdPartyInfoResponse>(
+      this.Constants.URLS.THIRD_PARTY_INFO,
+      {
+        headers: this.gryplineHeaders,
+        params: {
+          token: this.#accountToken,
+        },
+      },
+    );
+
+    const axiosData = res.data;
+
+    return res.status < 400 && axiosData?.status === 0;
+  }
+
+  /**
+   * Generate an OAuth code using the account token to grypline's API, then
    * store the code in `this.oAuthCode`.
    * @returns The obtained OAuth code.
    * @throws If the account token is not set or if the API request fails.
    */
-  async getOAuthCode() {
+  async generateOAuthCode() {
     if (!this.#accountToken) throw this.error('Account token is required to perform this action.');
 
     const res = await newAxiosInstance().post<OAuthGrantedResponse>(
       this.Constants.URLS.GRANT,
-      JSON.stringify({
+      {
         appCode: this.Constants.APP_CODE,
         type: 0,
         token: this.#accountToken,
-      }),
+      },
       {
         headers: this.gryplineHeaders,
       },
@@ -105,12 +152,10 @@ class EndfieldService extends BaseService {
    * to Skport's API, then store the CRED in `this.cred`.
    * @returns The generated CRED.
    * @throws If the OAuth code is not set or if the API request fails.
-   * @note This method will automatically call `getOAuthCode()` if `this.oAuthCode` is not set.
+   * @note This method will automatically call `generateOAuthCode()` if `this.oAuthCode` is not set.
    */
   async generateCred() {
-    if (!this.oAuthCode) {
-      await this.getOAuthCode();
-    }
+    if (!this.oAuthCode) await this.generateOAuthCode();
 
     const res = await newAxiosInstance().post<GeneratedCredResponse>(
       this.Constants.URLS.GENERATE_CRED,
@@ -130,8 +175,10 @@ class EndfieldService extends BaseService {
     const cred = axiosData.data?.cred;
     if (!cred) throw this.error('No CRED received from Skport API.');
 
+    // Clear the OAuth code after using it to generate CRED,
+    // as it's no longer needed and should not be reused.
+    this.oAuthCode = '';
     if (axiosData.data?.token) this.token = axiosData.data.token;
-
     return (this.cred = cred);
   }
 
@@ -148,9 +195,7 @@ class EndfieldService extends BaseService {
      * across requests, so maybe it's effected by the timestamp with
      * a short lifespan. Request cred will also return token so ~
      */
-    if (!this.cred) {
-      await this.generateCred();
-    }
+    if (!this.cred) await this.generateCred();
 
     const ts = Math.floor(Date.now() / 1000).toString();
 
@@ -179,11 +224,34 @@ class EndfieldService extends BaseService {
   /**
    * Generate the necessary headers for making as authorized requests to Skport's API,
    * @param url The full URL of the API endpoint you want to call, used for computing the sign header.
+   * @param withBinding Whether to include the player's binding code in the headers.
    * @returns An object containing the authorized headers: `cred`, `platform`, `timestamp`, and `sign`.
    * @throws If the CRED or sign token is not set.
    * @note This method requires both `this.cred` and `this.token` to be set, so it will throw an error if either of them is missing. Make sure to call `generateCred()` and `getSignToken()` before using this method.
    */
-  AuthorizedHeaders(url: string): {
+  AuthorizedHeaders(
+    url: string,
+    withBinding?: true,
+  ): {
+    cred: string;
+    platform: string;
+    timestamp: string;
+    sign: string;
+    'sk-game-role'?: string;
+  };
+  AuthorizedHeaders(
+    url: string,
+    withBinding: false,
+  ): {
+    cred: string;
+    platform: string;
+    timestamp: string;
+    sign: string;
+  };
+  AuthorizedHeaders(
+    url: string,
+    withSkGameRole: boolean = true,
+  ): {
     cred: string;
     platform: string;
     timestamp: string;
@@ -203,13 +271,22 @@ class EndfieldService extends BaseService {
     const path = new URL(url).pathname;
     const sign = this.#computeSign(path, '', ts, this.token);
 
-    return {
+    const obj: {
+      cred: string;
+      platform: string;
+      timestamp: string;
+      sign: string;
+      'sk-game-role'?: string;
+    } = {
       cred: this.cred,
       platform: this.Constants.PLATFORM,
       timestamp: ts,
       sign,
-      'sk-game-role': this.binding,
     };
+
+    if (withSkGameRole) obj['sk-game-role'] = this.bindingCode;
+
+    return obj;
   }
 
   /**
@@ -219,17 +296,12 @@ class EndfieldService extends BaseService {
    * @note This method will automatically call `generateCred()` and `getSignToken()` if `this.cred` or `this.token` is not set, respectively.
    */
   async getPlayerBinding() {
-    if (!this.cred) {
-      await this.generateCred();
-    }
+    if (!this.cred) await this.generateCred();
     // Generate cred should also generate token belong with it.
     // But just in case, if token is not set, get a new one.
-    if (!this.token) {
-      await this.getSignToken();
-    }
+    if (!this.token) await this.getSignToken();
 
-    const authorizedHeaders = this.AuthorizedHeaders(this.Constants.URLS.BINDING);
-    delete authorizedHeaders['sk-game-role'];
+    const authorizedHeaders = this.AuthorizedHeaders(this.Constants.URLS.BINDING, false);
 
     const res = await newAxiosInstance().get<PlayerBindingResponse>(this.Constants.URLS.BINDING, {
       headers: {
@@ -245,22 +317,7 @@ class EndfieldService extends BaseService {
     if (res.status >= 400 || axiosData.code !== 0)
       throw this.error('Failed to get player binding from Skport API.', axiosData);
 
-    const apps = axiosData.data?.list;
-    for (let i = 0; i < apps.length; i++) {
-      if (apps[i]?.appCode === 'endfield' && apps[i]?.bindingList) {
-        const binding = apps[i]?.bindingList[0];
-        const role = binding?.defaultRole || (binding?.roles && binding?.roles[0]);
-        if (role) {
-          this.binding = `${this.Constants.ENDFIELD_GAME_ID}_${role.roleId}_${role.serverId}`;
-          return this.binding;
-        }
-      }
-    }
-
-    throw this.error(
-      'No valid player binding found for Endfield game in Skport API response.',
-      axiosData,
-    );
+    return (this.binding = axiosData.data);
   }
 
   /**
@@ -270,13 +327,12 @@ class EndfieldService extends BaseService {
    * @note This method will automatically call `getPlayerBinding()` if `this.binding` is not set.
    */
   async getAttendance() {
-    if (!this.binding) {
-      await this.getPlayerBinding();
-    }
+    if (!this.binding) await this.getPlayerBinding();
 
-    const authorizedHeaders = this.AuthorizedHeaders(this.Constants.URLS.ATTENDANCE);
+    const url = this.Constants.URLS.ATTENDANCE;
+    const authorizedHeaders = this.AuthorizedHeaders(url);
 
-    const res = await axios.get<GetAttendanceResponse>(this.Constants.URLS.ATTENDANCE, {
+    const res = await axios.get<GetAttendanceResponse>(url, {
       headers: {
         ...this.skportHeaders,
         ...authorizedHeaders,
@@ -286,29 +342,105 @@ class EndfieldService extends BaseService {
     return res?.data?.data;
   }
 
+  /**
+   * Send the attendance reward claim request.
+   * @returns The attendance reward claim response object if the request is successful.
+   * @throws If the player binding is not set or if the API request fails.
+   * @note This method will automatically call `getPlayerBinding()` if `this.binding` is not set.
+   */
   async sendAttendance() {
-    if (!this.binding) {
-      await this.getPlayerBinding();
-    }
+    if (!this.binding) await this.getPlayerBinding();
 
-    const authorizedHeaders = this.AuthorizedHeaders(this.Constants.URLS.ATTENDANCE);
+    const url = this.Constants.URLS.ATTENDANCE;
+    const authorizedHeaders = this.AuthorizedHeaders(url);
 
-    const res = await newAxiosInstance().post<SendAttendanceResponse>(
-      this.Constants.URLS.ATTENDANCE,
-      undefined,
-      {
-        headers: {
-          ...this.skportHeaders,
-          ...authorizedHeaders,
-        },
+    const res = await newAxiosInstance().post<SendAttendanceResponse>(url, undefined, {
+      headers: {
+        ...this.skportHeaders,
+        ...authorizedHeaders,
       },
-    );
+    });
 
     const axiosData = res.data;
 
     if (res.status >= 400) throw this.error('Failed to send attendance reward request.', axiosData);
 
     return axiosData.data;
+  }
+
+  /**
+   * Get the user's Skport user check information.
+   * @returns The user check information object if the request is successful.
+   * @throws If the CRED or sign token is not set, or if the API request fails.
+   * @note This method will automatically call `generateCred()` and `getSignToken()` if `this.cred` or `this.token` is not set, respectively.
+   */
+  async getSkportUserCheck() {
+    if (!this.cred) await this.generateCred();
+    if (!this.token) await this.getSignToken();
+
+    const url = this.Constants.URLS.USER_CHECK;
+    const authorizedHeaders = this.AuthorizedHeaders(url);
+
+    const res = await newAxiosInstance().get<SkportUserCheckResponse>(url, {
+      headers: {
+        ...this.skportHeaders,
+        ...authorizedHeaders,
+      },
+    });
+
+    const axiosData = res.data;
+
+    if (res.status >= 400) throw this.error('Failed to get user check.', axiosData);
+
+    return axiosData.data;
+  }
+
+  /**
+   * Get the user's Skport user information.
+   * @returns The user information object if the request is successful.
+   * @throws If the CRED or sign token is not set, or if the API request fails.
+   * @note This method will automatically call `generateCred()` and `getSignToken()` if `this.cred` or `this.token` is not set, respectively.
+   */
+  async getSkportUser() {
+    if (!this.cred) await this.generateCred();
+    if (!this.token) await this.getSignToken();
+
+    const url = this.Constants.URLS.USER_INFO;
+    const authorizedHeaders = this.AuthorizedHeaders(url);
+
+    const res = await newAxiosInstance().get<SkportUserResponse>(url, {
+      headers: {
+        ...this.skportHeaders,
+        ...authorizedHeaders,
+      },
+    });
+
+    const axiosData = res.data;
+
+    if (res.status >= 400) throw this.error('Failed to get user.', axiosData);
+
+    return axiosData.data;
+  }
+
+  /**
+   * Get the user's Endfield in-game information from Skport's API, which may include the player's nickname, level, server, and other relevant details.
+   * @returns The Endfield user information object if the request is successful.
+   * @throws If the player binding is not set or if the API request fails.
+   */
+  async getEndfieldUserInfo() {
+    if (!this.binding) await this.getPlayerBinding();
+
+    const user = this.binding!.list?.[0]?.bindingList?.[0]?.defaultRole;
+    if (!user) throw this.error('No valid player binding found for Endfield game.');
+
+    return {
+      userId: user.roleId,
+      nickname: user.nickname,
+      level: user.level,
+      isBanned: user.isBanned,
+      serverType: user.serverType,
+      serverName: user.serverName,
+    };
   }
 
   /**
@@ -375,6 +507,10 @@ interface SkportResponse<T> {
   data: T;
 }
 
+type ThirdPartyInfoResponse = GryplineResponse<{
+  thirdPartyInfo: [];
+}>;
+
 type OAuthGrantedResponse = GryplineResponse<{
   uid: string;
   code: string;
@@ -400,7 +536,7 @@ interface RoleInfo {
   serverType: string;
   serverName: string;
 }
-type PlayerBindingResponse = SkportResponse<{
+interface PlayerBinding {
   list: [
     {
       appCode: string;
@@ -421,7 +557,8 @@ type PlayerBindingResponse = SkportResponse<{
     },
   ];
   serverDefaultBinding: object;
-}>;
+}
+type PlayerBindingResponse = SkportResponse<PlayerBinding>;
 
 interface AttendanceItem {
   awardId: string;
@@ -449,4 +586,57 @@ type SendAttendanceResponse = SkportResponse<{
   awardIds: AwardIdItem[];
   resourceInfoMap: Record<string, ResourceInfo>;
   tomorrowAwardIds: AwardIdItem[];
+}>;
+
+type SkportUserCheckResponse = SkportResponse<{
+  policyList: [];
+  isNewUser: boolean;
+  nickname: string;
+}>;
+
+interface SkportBasicUser {
+  id: string;
+  nickname: string;
+  profile: string;
+  avatarCode: number;
+  avatar: string;
+  gender: number;
+  status: number;
+  operationStatus: number;
+  identity: number;
+  kind: number;
+  moderatorStatus: number;
+  moderatorChangeTime: number;
+  createdAt: string;
+  latestLoginAt: string;
+}
+interface SkportUserPendant {
+  id: number;
+  iconUrl: string;
+  title: string;
+  description: string;
+}
+interface SkportUserRts {
+  follow: string;
+  fans: string;
+  liked: string;
+}
+interface SkportModerator {
+  isModerator: boolean;
+  operations: [];
+  role: string;
+  since: string;
+  status: number;
+  gameOperations: object;
+}
+type SkportUserResponse = SkportResponse<{
+  user: {
+    basicUser: SkportBasicUser;
+    pendant: SkportUserPendant;
+    background: null;
+  };
+  userRts: SkportUserRts;
+  userSanctionList: [];
+  userInfoApply: object;
+  moderator: SkportModerator;
 }>;
