@@ -1,4 +1,4 @@
-import type { ClientOptions, ContextMenuCommandBuilder, SlashCommandBuilder } from 'discord.js';
+import type { ContextMenuCommandBuilder, SlashCommandBuilder } from 'discord.js';
 import BotClient from '../src/BotClient.ts';
 import AutoCompleteInteraction from '../src/utilities/interaction/autocomplete.interaction.ts';
 import CommandInteraction from '../src/utilities/interaction/command.interaction.ts';
@@ -17,9 +17,6 @@ export declare global {
 
   var logger: ReturnType<typeof _logger>;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface BotClientOptions extends ClientOptions {}
 
 export interface EventHandler<Args extends unknown[] = unknown[]> {
   /**
