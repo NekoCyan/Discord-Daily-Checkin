@@ -1,4 +1,4 @@
-import { RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord.js';
+import { RESTPostAPIContextMenuApplicationCommandsJSONBody } from 'discord.js';
 import path from 'node:path';
 import { ContextMenuHandler } from '../../types/index.js';
 import BotClient from '../BotClient.js';
@@ -16,8 +16,8 @@ const contextMenusPathDir = path.resolve(entryPath, targetDir);
  */
 export default async function contextMenus(
   client: BotClient,
-): Promise<RESTPostAPIChatInputApplicationCommandsJSONBody[]> {
-  const loaded: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
+): Promise<RESTPostAPIContextMenuApplicationCommandsJSONBody[]> {
+  const loaded: RESTPostAPIContextMenuApplicationCommandsJSONBody[] = [];
 
   // Scan all files within the contextMenus directory and its subdirectories,
   // and load them as context menu handlers if they are valid.
