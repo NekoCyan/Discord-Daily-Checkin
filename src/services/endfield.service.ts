@@ -124,9 +124,9 @@ class EndfieldService extends BaseService {
 
   /**
    * Revalidate the current CRED by checking if it's still valid with Skport's API.
-   * If it's not valid or not set, generate a new CRED once.
+   * If it's not valid or not set, fetch the Skport user once (which will also generate a new CRED if needed).
    */
-  async revalidateCred() {
+  async revalidateCredAndFetchUser() {
     let isValid = true;
 
     // If cred is set, check if it's valid.
@@ -142,7 +142,7 @@ class EndfieldService extends BaseService {
       }
     }
 
-    if (!isValid || !this.cred) await this.generateCred();
+    if (!isValid || !this.cred) await this.getSkportUser();
   }
 
   /**
@@ -483,8 +483,8 @@ class EndfieldService extends BaseService {
     const tmrRewards: ResourceInfo[] = [];
 
     // Get calendar rewards.
-    const moment = timestampStartOfTheDay('Asia/Hong_Kong')!;
-    const todayIndex = moment.date() - 1;
+    const lastDoneIndex = [...calendar].reverse().findIndex((item) => item.done);
+    const todayIndex = calendar.length - lastDoneIndex - 1;
     const today = calendar[todayIndex];
     if (today && resources[today.awardId]) todayRewards.push(resources[today.awardId]!);
     const tmr = calendar[todayIndex + 1];
@@ -497,6 +497,8 @@ class EndfieldService extends BaseService {
       todayRewards.push(resources[firstToday.awardId]!);
     const firstTmr = firstTimeCheckin[1];
     if (firstTmr && resources[firstTmr.awardId]) tmrRewards.push(resources[firstTmr.awardId]!);
+
+    const moment = timestampStartOfTheDay('Asia/Hong_Kong')!;
 
     return {
       isTodayChecked: attendance.hasToday,
