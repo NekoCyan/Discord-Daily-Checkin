@@ -57,7 +57,7 @@ EndfieldSchema.methods = {
     return this.lastDailyChecked === timeNow;
   },
   async markLastDailyAsToday(save = true) {
-    if (this.isDailyChecked()) return;
+    if (!this.isDailyChecked()) return;
 
     const timeNow = timestampStartOfTheDay(EndfieldService.Constants.DAILY_RESET_TIMEZONE)!.format(
       'YYYY-MM-DD',
