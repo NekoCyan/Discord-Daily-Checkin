@@ -1,5 +1,5 @@
 {
-  "name": "endfield-daily-checkin",
+  "name": "discord-daily-checkin",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -18,8 +18,10 @@
     "docker:dev:build": "docker compose -f docker-compose.dev.yml build",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
     "docker:prod": "docker compose up -d",
+    "docker:prod:mongo": "docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d",
     "docker:prod:build": "docker compose build",
-    "docker:prod:down": "docker compose down"
+    "docker:prod:down": "docker compose down",
+    "docker:prod:down:mongo": "docker compose -f docker-compose.yml -f docker-compose.mongo.yml down"
   },
   "keywords": [
     "arknights-endfield",

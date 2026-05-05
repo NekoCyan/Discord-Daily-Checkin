@@ -1,0 +1,21 @@
+services:
+  worker:
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./data/mongo:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 3650d
+      timeout: 5s
+      retries: 5
+      start_period: 10s
