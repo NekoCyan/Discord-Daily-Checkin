@@ -46,6 +46,7 @@ class EndfieldService extends BaseService {
         USER_CHECK: 'https://zonai.skport.com/web/v1/user/check',
         USER_INFO: 'https://zonai.skport.com/web/v2/user',
       },
+      DAILY_RESET_TIMEZONE: 'Asia/Hong_Kong',
     };
   }
 
@@ -498,13 +499,51 @@ class EndfieldService extends BaseService {
     const firstTmr = firstTimeCheckin[1];
     if (firstTmr && resources[firstTmr.awardId]) tmrRewards.push(resources[firstTmr.awardId]!);
 
-    const moment = timestampStartOfTheDay('Asia/Hong_Kong')!;
+    const moment = timestampStartOfTheDay(EndfieldService.Constants.DAILY_RESET_TIMEZONE)!;
 
     return {
       isTodayChecked: attendance.hasToday,
       todayRewards: todayRewards,
       tomorrowRewards: tmrRewards,
       currentDay: todayIndex + 1,
+      nextDayTimestamp: moment.add(1, 'day').valueOf(),
+    };
+  }
+
+  async doCheckIn() {
+    const res = await this.sendAttendance().catch((e: ServiceError | Error) => e);
+    if (res instanceof ServiceError) {
+      // 10001 'Attendance reward already claimed for today'
+      if (res.data?.code === 10001) {
+        return true;
+      } else {
+        throw res;
+      }
+    } else if (res instanceof Error) {
+      // Maybe network error or something else, just throw it.
+      throw res;
+    }
+
+    const resources = res.resourceInfoMap;
+
+    const todayRewards: ResourceInfo[] = [];
+    const tmrRewards: ResourceInfo[] = [];
+
+    res.awardIds.forEach((item) => {
+      const reward = resources[item.id];
+      if (reward) todayRewards.push(reward);
+    });
+
+    res.tomorrowAwardIds.forEach((item) => {
+      const reward = resources[item.id];
+      if (reward) tmrRewards.push(reward);
+    });
+
+    const moment = timestampStartOfTheDay(EndfieldService.Constants.DAILY_RESET_TIMEZONE)!;
+
+    return {
+      todayRewards,
+      tomorrowRewards: tmrRewards,
       nextDayTimestamp: moment.add(1, 'day').valueOf(),
     };
   }

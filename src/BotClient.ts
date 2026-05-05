@@ -93,4 +93,25 @@ export default class BotClient extends Client<true> {
 
     return (this.isLogged = true);
   }
+
+  /**
+   * Mentions a slash command in the format of `</command subcommand:command_id>` if it exists in the requested slash commands.
+   * Otherwise, it returns the raw string.
+   * @param name The name of the slash command, including subcommands if any (e.g., "command subcommand").
+   * @returns The mention string for the slash command if found, or the raw name if not found.
+   */
+  mentionSlashCommand(name: string): string {
+    const [commandName, ...subParts] = name.split(' ');
+    const subcommand = subParts.join(' '); // handles multi-word subcommands
+
+    // Check slash commands first
+    const slash = this.slashCommandsRequested.find((cmd) => cmd.name === commandName);
+    if (slash) {
+      if (subcommand) return `</${commandName} ${subcommand}:${slash.id}>`;
+      return `</${slash.name}:${slash.id}>`;
+    }
+
+    // Return the raw string when nothing is found
+    return name;
+  }
 }

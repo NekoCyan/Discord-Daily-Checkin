@@ -1,7 +1,7 @@
+import momentTimezone from 'moment-timezone';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import momentTimezone from 'moment-timezone';
 
 /**
  * Resolves a relative file path to an absolute file URL, which can be used for dynamic imports.
@@ -84,4 +84,22 @@ export function timestampStartOfTheDay(timezone: string) {
   const startOfDay = now.startOf('day');
 
   return startOfDay;
+}
+
+/**
+ * Truncates the middle of a string, keeping a specified number of characters at the start and end, and replacing the removed middle section with a placeholder.
+ * @param str - The string to truncate.
+ * @param keepStart - The number of characters to keep at the start of the string.
+ * @param keepEnd - The number of characters to keep at the end of the string.
+ * @param placeholder - The string to insert in place of the truncated middle section (default is '***').
+ * @returns The truncated string with the middle section replaced by the placeholder if the original string exceeds the combined length of the kept start and end characters, or the original string if it does not exceed that length.
+ */
+export function truncateMiddle(
+  str: string,
+  keepStart: number,
+  keepEnd: number,
+  placeholder = '***',
+): string {
+  if (str.length <= keepStart + keepEnd) return str;
+  return str.slice(0, keepStart) + placeholder + str.slice(str.length - keepEnd);
 }
