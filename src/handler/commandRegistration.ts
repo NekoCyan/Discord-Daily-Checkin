@@ -41,8 +41,12 @@ export default async function (client: BotClient): Promise<void> {
       //   });
     });
     logger.info(
-      `SUCCESS | Registered ${client.slashCommandsRequested.size} slash commands.`,
+      `SUCCESS | Registered ${client.slashCommandsRequested.size} commands.`,
       'command-registration',
+    );
+
+    logger.debug(
+      `Slash Commands: ${[...client.slashCommandsRequested.values()].map((x) => x.name).join(', ')}`,
     );
   } catch (e) {
     logger.error({ error: e }, `ERROR | Failed to register commands.`, 'command-registration');

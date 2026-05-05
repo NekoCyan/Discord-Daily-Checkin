@@ -25,6 +25,7 @@ export default class BotClient extends Client<true> {
     super(options);
     this.options = {
       ...this.options,
+      // I disable caching all cuz of 1gb ram hosting ehe ~
       makeCache: Options.cacheWithLimits({
         VoiceStateManager: 0,
         UserManager: 0,
