@@ -1,6 +1,8 @@
 import axios from 'axios';
 import crypto from 'node:crypto';
+import { ServiceError } from '../errors/ServiceError.js';
 import { newAxiosInstance } from '../utilities/Request.js';
+import { timestampStartOfTheDay } from '../utilities/Utils.js';
 import BaseService from './baseService.js';
 
 export interface EndfieldServiceOptions {
@@ -17,6 +19,7 @@ class EndfieldService extends BaseService {
   oAuthCode: string = '';
   token: string = '';
   binding: PlayerBinding | null = null;
+  skportUser: SkportUserResponse['data'] | null = null;
 
   constructor(options?: EndfieldServiceOptions) {
     super();
@@ -97,6 +100,10 @@ class EndfieldService extends BaseService {
     return `${this.Constants.ENDFIELD_GAME_ID}_${role.roleId}_${role.serverId}`;
   }
 
+  /**
+   * Check if the current account token is valid by making a request to Grypline's API.
+   * @returns A boolean indicating whether the account token is valid.
+   */
   async IsValidAccountToken() {
     if (!this.#accountToken) throw this.error('Account token is required to perform this action.');
 
@@ -113,6 +120,29 @@ class EndfieldService extends BaseService {
     const axiosData = res.data;
 
     return res.status < 400 && axiosData?.status === 0;
+  }
+
+  /**
+   * Revalidate the current CRED by checking if it's still valid with Skport's API.
+   * If it's not valid or not set, generate a new CRED once.
+   */
+  async revalidateCred() {
+    let isValid = true;
+
+    // If cred is set, check if it's valid.
+    if (this.cred) {
+      const check = await this.getSkportUser().catch((e: ServiceError | Error) => e);
+      if (check instanceof ServiceError) {
+        // 10002 'User is not logged in'
+        if (check.data?.code === 10002) isValid = false;
+        else throw check;
+      } else if (check instanceof Error) {
+        // Maybe network error or something else, just throw it.
+        throw check;
+      }
+    }
+
+    if (!isValid || !this.cred) await this.generateCred();
   }
 
   /**
@@ -231,7 +261,7 @@ class EndfieldService extends BaseService {
    */
   AuthorizedHeaders(
     url: string,
-    withBinding?: true,
+    withBinding: true,
   ): {
     cred: string;
     platform: string;
@@ -241,7 +271,7 @@ class EndfieldService extends BaseService {
   };
   AuthorizedHeaders(
     url: string,
-    withBinding: false,
+    withBinding?: false,
   ): {
     cred: string;
     platform: string;
@@ -250,7 +280,7 @@ class EndfieldService extends BaseService {
   };
   AuthorizedHeaders(
     url: string,
-    withSkGameRole: boolean = true,
+    withSkGameRole: boolean = false,
   ): {
     cred: string;
     platform: string;
@@ -301,7 +331,7 @@ class EndfieldService extends BaseService {
     // But just in case, if token is not set, get a new one.
     if (!this.token) await this.getSignToken();
 
-    const authorizedHeaders = this.AuthorizedHeaders(this.Constants.URLS.BINDING, false);
+    const authorizedHeaders = this.AuthorizedHeaders(this.Constants.URLS.BINDING);
 
     const res = await newAxiosInstance().get<PlayerBindingResponse>(this.Constants.URLS.BINDING, {
       headers: {
@@ -330,7 +360,7 @@ class EndfieldService extends BaseService {
     if (!this.binding) await this.getPlayerBinding();
 
     const url = this.Constants.URLS.ATTENDANCE;
-    const authorizedHeaders = this.AuthorizedHeaders(url);
+    const authorizedHeaders = this.AuthorizedHeaders(url, true);
 
     const res = await axios.get<GetAttendanceResponse>(url, {
       headers: {
@@ -352,7 +382,7 @@ class EndfieldService extends BaseService {
     if (!this.binding) await this.getPlayerBinding();
 
     const url = this.Constants.URLS.ATTENDANCE;
-    const authorizedHeaders = this.AuthorizedHeaders(url);
+    const authorizedHeaders = this.AuthorizedHeaders(url, true);
 
     const res = await newAxiosInstance().post<SendAttendanceResponse>(url, undefined, {
       headers: {
@@ -419,7 +449,7 @@ class EndfieldService extends BaseService {
 
     if (res.status >= 400) throw this.error('Failed to get user.', axiosData);
 
-    return axiosData.data;
+    return (this.skportUser = axiosData.data);
   }
 
   /**
@@ -440,6 +470,39 @@ class EndfieldService extends BaseService {
       isBanned: user.isBanned,
       serverType: user.serverType,
       serverName: user.serverName,
+    };
+  }
+
+  async getCheckInInfo() {
+    const attendance = await this.getAttendance();
+
+    const calendar = attendance.calendar;
+    const resources = attendance.resourceInfoMap;
+
+    const todayRewards: ResourceInfo[] = [];
+    const tmrRewards: ResourceInfo[] = [];
+
+    // Get calendar rewards.
+    const moment = timestampStartOfTheDay('Asia/Hong_Kong')!;
+    const todayIndex = moment.date() - 1;
+    const today = calendar[todayIndex];
+    if (today && resources[today.awardId]) todayRewards.push(resources[today.awardId]!);
+    const tmr = calendar[todayIndex + 1];
+    if (tmr && resources[tmr.awardId]) tmrRewards.push(resources[tmr.awardId]!);
+
+    // Extra reward for first check-in.
+    const firstTimeCheckin = attendance.first.filter((item) => item.available && !item.done);
+    const firstToday = firstTimeCheckin[0];
+    if (firstToday && resources[firstToday.awardId])
+      todayRewards.push(resources[firstToday.awardId]!);
+    const firstTmr = firstTimeCheckin[1];
+    if (firstTmr && resources[firstTmr.awardId]) tmrRewards.push(resources[firstTmr.awardId]!);
+
+    return {
+      isTodayChecked: attendance.hasToday,
+      todayRewards: todayRewards,
+      tomorrowRewards: tmrRewards,
+      nextDayTimestamp: moment.add(1, 'day').valueOf(),
     };
   }
 

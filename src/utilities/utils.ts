@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import momentTimezone from 'moment-timezone';
 
 /**
  * Resolves a relative file path to an absolute file URL, which can be used for dynamic imports.
@@ -63,4 +64,24 @@ export function scanFiles(dir: string, depth: number = 1): string[] {
  */
 export function truncate(str: string, size: number): string {
   return str.length > size ? str.slice(0, size - 1) + '…' : str;
+}
+
+/**
+ * Gets the timestamp for the start of the current day (00:00 AM) in a specified timezone.
+ * @param timezone - The IANA timezone identifier (e.g., 'America/New_York') for which to calculate the start of the day.
+ * @returns A Moment object representing the start of the day in the specified timezone, or null if the timezone is invalid.
+ */
+export function timestampStartOfTheDay(timezone: string) {
+  const moment = momentTimezone;
+
+  // Validate timezone
+  if (!moment.tz.zone(timezone)) return null;
+
+  // Get current date in the given timezone
+  const now = moment().tz(timezone);
+
+  // Get the start of the day (00:00 AM) in the given timezone
+  const startOfDay = now.startOf('day');
+
+  return startOfDay;
 }
