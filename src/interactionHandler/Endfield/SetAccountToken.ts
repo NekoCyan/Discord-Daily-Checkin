@@ -19,12 +19,10 @@ export async function EndfieldSetAccountToken(int: CommandInteraction, accountTo
 
   // Before saving, daily once.
   const checkIn = await service.getCheckInInfo();
-  if (!checkIn.isTodayChecked) {
-    await service.doCheckIn();
+  if (!checkIn.isTodayChecked) await service.doCheckIn();
 
-    // It will be automatically updated in the database in the below.
-    endfieldModel.markLastDailyAsToday(false);
-  }
+  // It will be automatically updated in the database in the below.
+  endfieldModel.markLastDailyAsToday(false);
 
   await endfieldModel.updateOnChange(service.toObject(), true);
 
