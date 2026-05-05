@@ -1,6 +1,6 @@
 import { APIApplicationCommand, Client, Collection, Options } from 'discord.js';
 import path from 'node:path';
-import { BotClientOptions, SlashCommandHandler } from '../types/index.js';
+import { BotClientOptions, ContextMenuHandler, SlashCommandHandler } from '../types/index.js';
 import { entryPath } from './entryPath.js';
 import { resolveDynamicImportPath } from './utilities/Utils.js';
 
@@ -20,6 +20,8 @@ export default class BotClient extends Client<true> {
 
   slashCommands = new Collection<string, SlashCommandHandler>();
   slashCommandsRequested = new Collection<string, APIApplicationCommand>();
+  contextMenus = new Collection<string, ContextMenuHandler>();
+  contextMenusRequested = new Collection<string, APIApplicationCommand>();
 
   constructor(options: BotClientOptions) {
     super(options);

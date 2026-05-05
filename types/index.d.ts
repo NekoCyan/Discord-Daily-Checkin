@@ -1,7 +1,8 @@
-import type { ClientOptions, SlashCommandBuilder } from 'discord.js';
+import type { ClientOptions, ContextMenuCommandBuilder, SlashCommandBuilder } from 'discord.js';
 import BotClient from '../src/BotClient.ts';
 import AutoCompleteInteraction from '../src/utilities/interaction/autocomplete.interaction.ts';
 import CommandInteraction from '../src/utilities/interaction/command.interaction.ts';
+import ContextMenuInteraction from '../src/utilities/interaction/contextmenu.interaction.ts';
 import _logger from '../src/utilities/logger.ts';
 
 export declare global {
@@ -46,4 +47,16 @@ export interface SlashCommandHandler {
    * function to run when the Slash Command's autocomplete is triggered
    */
   autoComplete?: (interaction: AutoCompleteInteraction) => Promise<void>;
+}
+
+export interface ContextMenuHandler {
+  /**
+   * indicates whether this Context Menu is enabled or not
+   */
+  status: boolean;
+  /**
+   * metadata for the Context Menu
+   */
+  metadata: ContextMenuCommandBuilder;
+  run: (interaction: ContextMenuInteraction) => Promise<void>;
 }

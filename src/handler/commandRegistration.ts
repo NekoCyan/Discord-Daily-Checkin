@@ -1,17 +1,22 @@
 import {
   APIApplicationCommand,
+  ApplicationCommandType,
   REST,
   RESTPostAPIApplicationCommandsJSONBody,
   Routes,
 } from 'discord.js';
 import BotClient from '../BotClient.js';
+import contextMenus from './contextMenus.js';
 import slashCommands from './slashCommands.js';
 
 export default async function (client: BotClient): Promise<void> {
   const rest = new REST({ version: '10' }).setToken(client.token);
 
   // Initilize an array to hold the metadata of the loaded commands for registration with Discord.
-  const loaded: RESTPostAPIApplicationCommandsJSONBody[] = [...(await slashCommands(client))];
+  const loaded: RESTPostAPIApplicationCommandsJSONBody[] = [
+    ...(await slashCommands(client)),
+    ...(await contextMenus(client)),
+  ];
 
   if (loaded.length === 0) return;
 
@@ -30,23 +35,28 @@ export default async function (client: BotClient): Promise<void> {
         throw new Error(`ERROR | No application commands data collected from API.`);
       }
 
-      const slashCommandsData = data.filter((x) => x.type === 1);
+      const slashCommandsData = data.filter((x) => x.type === ApplicationCommandType.ChatInput);
       slashCommandsData.forEach((x) => {
         client.slashCommandsRequested.set(x.name, x);
       });
 
-      //   const contextMenuesData = data.filter((x) => x.type === 2 || x.type === 3);
-      //   contextMenuesData.forEach((x) => {
-      //     client.contextMenuesRequested.set(x.name, x);
-      //   });
+      const contextMenusData = data.filter(
+        (x) => x.type === ApplicationCommandType.User || x.type === ApplicationCommandType.Message,
+      );
+      contextMenusData.forEach((x) => {
+        client.contextMenusRequested.set(x.name, x);
+      });
     });
     logger.info(
-      `SUCCESS | Registered ${client.slashCommandsRequested.size} commands.`,
+      `SUCCESS | Registered ${client.slashCommandsRequested.size} slash commands and ${client.contextMenusRequested.size} context menus.`,
       'command-registration',
     );
 
     logger.debug(
-      `Slash Commands: ${[...client.slashCommandsRequested.values()].map((x) => x.name).join(', ')}`,
+      `Slash Commands: ${[...client.slashCommandsRequested.values()].map((x) => x.name).join(', ') || 'None'}`,
+    );
+    logger.debug(
+      `Context Menus: ${[...client.contextMenusRequested.values()].map((x) => x.name).join(', ') || 'None'}`,
     );
   } catch (e) {
     logger.error({ error: e }, `ERROR | Failed to register commands.`, 'command-registration');

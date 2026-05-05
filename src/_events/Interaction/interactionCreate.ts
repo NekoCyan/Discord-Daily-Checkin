@@ -2,6 +2,7 @@ import { Interaction } from 'discord.js';
 import { EventHandler } from '../../../types/index.js';
 import AutoCompleteInteraction from '../../utilities/interaction/autocomplete.interaction.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
+import ContextMenuInteraction from '../../utilities/interaction/contextmenu.interaction.js';
 
 export default {
   status: true,
@@ -47,7 +48,20 @@ export default {
       // For now, we don't have any modal interactions, so just silent it.
       return;
     } else if (interaction.isContextMenuCommand()) {
-      // For now, we don't have any context menu interactions, so just silent it.
+      const contextMenu = client.contextMenus.get(interaction.commandName);
+      if (!contextMenu) return;
+
+      const contextMenuInteraction = new ContextMenuInteraction(client, interaction);
+
+      try {
+        await contextMenu.run(contextMenuInteraction);
+      } catch (err) {
+        logger.error(
+          { err, command: interaction.commandName },
+          `Error executing context menu ${interaction.commandName}`,
+        );
+        return;
+      }
     } else if (interaction.isAnySelectMenu()) {
       // For now, we don't have any select menu interactions, so just silent it.
       return;
