@@ -38,7 +38,12 @@ export interface IEndfieldInstanceMethods {
     save?: boolean,
   ) => Promise<boolean>;
   isDailyChecked: () => boolean;
-  markLastDailyAsToday: () => Promise<void>;
+  /**
+   * Mark the last daily check-in date as today. This method updates the `lastDailyChecked` field to the current date in 'YYYY-MM-DD' format.
+   * @param save [default=true] Whether to save the changes to the database immediately after updating in memory.
+   * @returns A promise that resolves when the operation is complete.
+   */
+  markLastDailyAsToday: (save?: boolean) => Promise<void>;
 }
 export interface IEndfieldStaticsMethods {
   getOrCreate(discordId: string): Promise<EndfieldHydratedDocument>;
