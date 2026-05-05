@@ -4,6 +4,7 @@ import {
   SlashCommandBuilder,
 } from 'discord.js';
 import { SlashCommandHandler } from '../../../types/index.js';
+import { EndfieldDoCheckIn } from '../../interactionHandler/Endfield/DoCheckIn.js';
 import { EndfieldProfile } from '../../interactionHandler/Endfield/Profile.js';
 import {
   EndfieldHowToGetAccountToken,
@@ -50,28 +51,23 @@ export default {
         ),
     ),
   run: async function (int) {
-    const inDevelopment = () =>
-      int.SendOrEdit('This command is still in development. Please wait for the next update!');
-
     await int.SendOrEdit(true);
     const subCommand = int.interaction.options.getSubcommand();
 
     switch (subCommand) {
       case 'profile': {
         const target = int.interaction.options.getUser('target') ?? int.interaction.user;
-        return EndfieldProfile(int, target);
+        await EndfieldProfile(int, target);
+        break;
       }
       case 'checkin': {
-        await inDevelopment();
+        await EndfieldDoCheckIn(int.client, int.interaction.user, int);
         break;
       }
       case 'set-account-token': {
         const token = int.interaction.options.getString('token');
-        if (!token) {
-          await EndfieldHowToGetAccountToken(int);
-        } else {
-          await EndfieldSetAccountToken(int, token);
-        }
+        if (!token) await EndfieldHowToGetAccountToken(int);
+        else await EndfieldSetAccountToken(int, token);
         break;
       }
     }

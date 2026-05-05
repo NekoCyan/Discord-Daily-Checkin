@@ -484,8 +484,7 @@ class EndfieldService extends BaseService {
     const tmrRewards: ResourceInfo[] = [];
 
     // Get calendar rewards.
-    const lastDoneIndex = [...calendar].reverse().findIndex((item) => item.done);
-    const todayIndex = calendar.length - lastDoneIndex - 1;
+    const todayIndex = calendar.filter((x) => x.done || x.available).length - 1;
     const today = calendar[todayIndex];
     if (today && resources[today.awardId]) todayRewards.push(resources[today.awardId]!);
     const tmr = calendar[todayIndex + 1];

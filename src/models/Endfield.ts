@@ -31,7 +31,7 @@ const EndfieldSchema = new mongoose.Schema<
 
 // methods.
 EndfieldSchema.methods = {
-  async updateOnChange(data: Record<string, unknown>, save = false) {
+  async updateOnChange(data: Record<string, unknown>, save = true) {
     const self = this as unknown as Record<string, unknown>;
     const validKeys = extractSchemaKeys(EndfieldSchema);
 
@@ -65,6 +65,13 @@ EndfieldSchema.methods = {
 
     this.lastDailyChecked = timeNow;
     if (save) await this.save();
+  },
+  async resetOnUnauthorized() {
+    await this.updateOnChange({
+      accountToken: '',
+      cred: '',
+      lastDailyChecked: '',
+    });
   },
 };
 

@@ -30,7 +30,7 @@ export interface IEndfieldInstanceMethods {
    * Update the Endfield instance with the provided data, only if the new values are different from the current ones.
    * This method is useful for updating multiple fields at once while ensuring that only changed fields are updated.
    * @param data An object containing the fields to update with their new values.
-   * @param save [default=false] Whether to save the changes to the database immediately after updating in memory.
+   * @param save [default=true] Whether to save the changes to the database immediately after updating in memory.
    * @returns A promise that resolves to a boolean indicating whether any changes were made.
    */
   updateOnChange: (
@@ -44,6 +44,7 @@ export interface IEndfieldInstanceMethods {
    * @returns A promise that resolves when the operation is complete.
    */
   markLastDailyAsToday: (save?: boolean) => Promise<void>;
+  resetOnUnauthorized: () => Promise<void>;
 }
 export interface IEndfieldStaticsMethods {
   getOrCreate(discordId: string): Promise<EndfieldHydratedDocument>;
