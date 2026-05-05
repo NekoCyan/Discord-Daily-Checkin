@@ -21,7 +21,7 @@ export async function EndfieldDoCheckIn(
 
   if (int && !endfieldModel.accountToken)
     return int.SendOrEdit(
-      `You have not set your account token yet. Please use ${client.mentionSlashCommand('endfield set-account-token')} to set it.`,
+      `You have not set your Endfield account token yet. Please use ${client.mentionSlashCommand('endfield set-account-token')} to set it.`,
     );
 
   const service = new EndfieldService({
@@ -31,7 +31,7 @@ export async function EndfieldDoCheckIn(
   const isValid = await service.IsValidAccountToken();
   if (!isValid) {
     await endfieldModel.resetOnUnauthorized();
-    const errMsg = `The account token you provided is no more valid, as it will be removed from your discord account. Please update it by using ${client.mentionSlashCommand('endfield set-account-token')}.`;
+    const errMsg = `The Endfield account token you provided is no more valid, as it will be removed from your Discord account. Please update it by using ${client.mentionSlashCommand('endfield set-account-token')}.`;
     if (int) return int.SendOrEdit(errMsg);
     else user.send(errMsg).catch(() => null);
   }

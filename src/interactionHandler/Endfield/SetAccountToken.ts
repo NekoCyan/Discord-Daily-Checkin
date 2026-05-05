@@ -12,7 +12,7 @@ export async function EndfieldSetAccountToken(
   const isValid = await service.IsValidAccountToken();
   if (!isValid)
     return int.SendOrEdit(
-      'The account token you provided is invalid. Please double-check and try again.',
+      'The Endfield account token you provided is invalid. Please double-check and try again.',
     );
 
   // Save the valid token to the database
@@ -28,6 +28,6 @@ export async function EndfieldSetAccountToken(
   await endfieldModel.save(); // Manual save to ensure all field (includes lastDailyChecked) are updated in database.
 
   return int.SendOrEdit(
-    `Your endfield account token has been successfully updated! \`\`${truncateMiddle(accountToken, 4, 4)}\`\``,
+    `Your Endfield account token has been successfully updated! \`\`${truncateMiddle(accountToken, 4, 4)}\`\``,
   );
 }

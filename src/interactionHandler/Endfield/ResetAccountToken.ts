@@ -7,6 +7,6 @@ export async function EndfieldResetAccountToken(int: CommandInteraction): Promis
   await endfieldModel.resetOnUnauthorized();
 
   return int.SendOrEdit(
-    `Your endfield account token has been successfully revoked from your discord account!`,
+    `Your Endfield account token has been successfully deleted from your Discord account!`,
   );
 }

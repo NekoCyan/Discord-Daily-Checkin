@@ -22,7 +22,7 @@ const EndfieldSchema = new mongoose.Schema<
     accountToken: { type: String, default: '' },
     cred: { type: String, default: '' },
     isPublic: { type: Boolean, default: false },
-    lastDailyChecked: { type: String, default: '' },
+    lastDailyChecked: { type: String, default: '', index: true },
   },
   {
     versionKey: false,

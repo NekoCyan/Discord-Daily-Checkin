@@ -7,9 +7,11 @@ import { SlashCommandHandler } from '../../../types/index.js';
 import { EndfieldDoCheckIn } from '../../interactionHandler/Endfield/DoCheckIn.js';
 import { EndfieldProfile } from '../../interactionHandler/Endfield/Profile.js';
 import {
-  EndfieldHowToGetAccountToken,
+  EndfieldResetAccountToken,
   EndfieldSetAccountToken,
+  EndfieldSetVisibility,
 } from '../../interactionHandler/Endfield/index.js';
+import EndfieldModel from '../../models/Endfield.js';
 
 export default {
   status: true,
@@ -43,11 +45,25 @@ export default {
           opt
             .setName('token')
             .setDescription(
-              'The account token you get from Website (leave empty to see how to get it).',
+              'The account token you got (type "reset" to delete token from your Discord account).',
             )
             .setMinLength(0)
             .setMaxLength(100)
-            .setRequired(false),
+            .setRequired(true),
+        ),
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('set-visibility')
+        .setDescription(
+          'Set the visibility of your Endfield profile if you want the other users to see it.',
+        )
+        .addStringOption((opt) =>
+          opt
+            .setName('visibility')
+            .setDescription('The visibility of your Endfield profile.')
+            .setRequired(true)
+            .setAutocomplete(true),
         ),
     ),
   run: async function (int) {
@@ -65,13 +81,33 @@ export default {
         break;
       }
       case 'set-account-token': {
-        const token = int.interaction.options.getString('token');
-        if (!token) await EndfieldHowToGetAccountToken(int);
+        const token = int.interaction.options.getString('token', true);
+        if (token.toLowerCase() === 'reset') await EndfieldResetAccountToken(int);
         else await EndfieldSetAccountToken(int, token);
+        break;
+      }
+      case 'set-visibility': {
+        const visibility = int.interaction.options.getString('visibility');
+        await EndfieldSetVisibility(int, visibility?.toLowerCase());
         break;
       }
     }
 
     return;
+  },
+  autoComplete: async function (int) {
+    const isPublic = (await EndfieldModel.getOrCreate(int.interaction.user.id)).isPublic;
+    const choices = [
+      {
+        name: 'Public' + (isPublic ? ' [Current state]' : ''),
+        value: 'public',
+      },
+      {
+        name: 'Private' + (!isPublic ? ' [Current state]' : ''),
+        value: 'private',
+      },
+    ];
+
+    await int.interaction.respond(choices);
   },
 } as SlashCommandHandler;

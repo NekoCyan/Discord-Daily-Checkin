@@ -23,12 +23,12 @@ export async function EndfieldProfile(
   if (!endfieldModel.accountToken)
     return int.SendOrEdit(
       isSelf
-        ? `You have not set your account token yet. Please use ${int.client.mentionSlashCommand('endfield set-account-token')} to set it.`
-        : `${target.username} has not set their account token yet.`,
+        ? `You have not set your Endfield account token yet. Please use ${int.client.mentionSlashCommand('endfield set-account-token')} to set it.`
+        : `${target.toString()} has not set their Endfield account token yet.`,
     );
   // Check if public.
   if (!endfieldModel.isPublic && !isSelf)
-    return int.SendOrEdit(`${target.username} has set their profile to private.`);
+    return int.SendOrEdit(`${target.toString()} has set their profile to private.`);
 
   const service = new EndfieldService({
     accountToken: endfieldModel.accountToken,
@@ -80,6 +80,7 @@ export async function EndfieldProfile(
       [
         `Today check-in status: ${userCheckin.isTodayChecked ? '✅ Checked in' : '❌ Not checked in yet'}.`,
         `Next check-in time: <t:${nextCheckinTS}:R> (<t:${nextCheckinTS}:F>).`,
+        !endfieldModel.isPublic ? `-# *This profile is private. Only you can see it.*` : '',
       ].join('\n'),
     ),
   );
