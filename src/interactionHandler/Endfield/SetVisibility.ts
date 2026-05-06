@@ -1,4 +1,5 @@
 import EndfieldModel from '../../models/Endfield.js';
+import ButtonInteraction from '../../utilities/interaction/button.interaction.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
 
 /**
@@ -8,7 +9,7 @@ import CommandInteraction from '../../utilities/interaction/command.interaction.
  * @returns A promise that resolves when the visibility has been updated.
  */
 export async function EndfieldSetVisibility(
-  int: CommandInteraction,
+  int: CommandInteraction | ButtonInteraction,
   visibility?: string,
 ): Promise<unknown> {
   if (visibility && !['public', 'private'].includes(visibility))
@@ -24,6 +25,11 @@ export async function EndfieldSetVisibility(
   });
 
   return int.SendOrEdit(
-    `Your Endfield profile visibility has been successfully updated to \`${newVisibility}\`.`,
+    [
+      `Your Endfield profile visibility has been successfully updated to \`${newVisibility}\`.`,
+      int instanceof ButtonInteraction && newVisibility === 'public'
+        ? `-# Tips: You can set back to private by clicking the button again or using the command ${int.client.mentionSlashCommand('endfield set-visibility')}.`
+        : '',
+    ].join('\n'),
   );
 }

@@ -1,8 +1,11 @@
 import { Interaction } from 'discord.js';
 import { EventHandler } from '../../../types/index.js';
 import AutoCompleteInteraction from '../../utilities/interaction/autocomplete.interaction.js';
+import ButtonInteraction from '../../utilities/interaction/button.interaction.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
 import ContextMenuInteraction from '../../utilities/interaction/contextmenu.interaction.js';
+
+const somethingWentWrongMsg = `Something went wrong while executing the interaction. Please try again later or contact bot administrator for more information.`;
 
 export default {
   status: true,
@@ -23,12 +26,12 @@ export default {
           { err, command: interaction.commandName },
           `Error executing slash command ${interaction.commandName}`,
         );
+        await commandInteraction.SendOrEdit(somethingWentWrongMsg, true);
         return;
       }
     } else if (interaction.isAutocomplete()) {
       const command = client.slashCommands.get(interaction.commandName);
-      if (!command) return;
-      if (typeof command?.autoComplete !== 'function') return;
+      if (!command || typeof command.autoComplete !== 'function') return;
 
       const autoCompleteInteraction = new AutoCompleteInteraction(client, interaction);
 
@@ -39,11 +42,30 @@ export default {
           { err, command: interaction.commandName },
           `Error executing autocomplete for slash command ${interaction.commandName}`,
         );
+        await autoCompleteInteraction.interaction.respond([
+          {
+            name: `An error occurred... try again later.`,
+            value: '_',
+          },
+        ]);
         return;
       }
     } else if (interaction.isButton()) {
-      // For now, we don't have any button interactions, so just silent it.
-      return;
+      const button = client.buttons.get(interaction.customId);
+      if (!button) return;
+
+      const buttonInteraction = new ButtonInteraction(client, interaction);
+
+      try {
+        await button.run(buttonInteraction);
+      } catch (err) {
+        logger.error(
+          { err, customId: interaction.customId },
+          `Error executing button with custom ID ${interaction.customId}`,
+        );
+        await buttonInteraction.SendOrEdit(somethingWentWrongMsg, true);
+        return;
+      }
     } else if (interaction.isModalSubmit()) {
       // For now, we don't have any modal interactions, so just silent it.
       return;
@@ -60,6 +82,7 @@ export default {
           { err, command: interaction.commandName },
           `Error executing context menu ${interaction.commandName}`,
         );
+        await contextMenuInteraction.SendOrEdit(somethingWentWrongMsg, true);
         return;
       }
     } else if (interaction.isAnySelectMenu()) {

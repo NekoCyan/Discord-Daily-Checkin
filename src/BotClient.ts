@@ -1,11 +1,11 @@
 import { APIApplicationCommand, Client, ClientOptions, Collection, Options } from 'discord.js';
 import path from 'node:path';
-import { ContextMenuHandler, SlashCommandHandler } from '../types/index.js';
+import { ButtonHandler, ContextMenuHandler, SlashCommandHandler } from '../types/index.js';
 import { entryPath } from './entryPath.js';
 import { resolveDynamicImportPath } from './utilities/Utils.js';
 
 const handlerPath = path.resolve(entryPath, './handler');
-const allHandlers = ['events', 'commandRegistration'];
+const allHandlers = ['events', 'commandRegistration', 'buttons'];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface BotClientOptions extends ClientOptions {}
@@ -21,6 +21,7 @@ export default class BotClient extends Client<true> {
    */
   isFullyReady: boolean = false;
 
+  buttons = new Collection<string, ButtonHandler>();
   slashCommands = new Collection<string, SlashCommandHandler>();
   slashCommandsRequested = new Collection<string, APIApplicationCommand>();
   contextMenus = new Collection<string, ContextMenuHandler>();

@@ -1,6 +1,7 @@
 import type { ContextMenuCommandBuilder, SlashCommandBuilder } from 'discord.js';
 import BotClient from '../src/BotClient.ts';
 import AutoCompleteInteraction from '../src/utilities/interaction/autocomplete.interaction.ts';
+import ButtonInteraction from '../src/utilities/interaction/button.interaction.ts';
 import CommandInteraction from '../src/utilities/interaction/command.interaction.ts';
 import ContextMenuInteraction from '../src/utilities/interaction/contextmenu.interaction.ts';
 import _logger from '../src/utilities/logger.ts';
@@ -28,6 +29,20 @@ export interface EventHandler<Args extends unknown[] = unknown[]> {
    */
   once: boolean;
   run(client: BotClient, ...args: Args): Promise<void>;
+}
+
+export interface ButtonHandler {
+  /**
+   * indicates whether this Button is enabled or not
+   */
+  status: boolean;
+  /**
+   * id of the button, Discord would treat this as the customId of the button.
+   * This should be unique among all buttons.
+   * Use this id to identify which button is clicked in the interaction handler.
+   */
+  id: string;
+  run(interaction: ButtonInteraction): Promise<void>;
 }
 
 export interface SlashCommandHandler {
