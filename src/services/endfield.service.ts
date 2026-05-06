@@ -118,9 +118,35 @@ class EndfieldService extends BaseService {
       },
     );
 
+    /**
+      * Authorized (200)
+      {
+        "data": {
+          "thirdPartyInfo": []
+        },
+        "msg": "OK",
+        "status": 0,
+        "type": "A"
+      }
+
+      * Unauthorized (401)
+      {
+        "msg": "Login status expired.",
+        "status": 3,
+        "type": "A"
+      }
+     */
     const axiosData = res.data;
 
-    return res.status < 400 && axiosData?.status === 0;
+    // Strict status code check between 200 and 401 and response status data for better handling.
+    // Just to make sure that we are correctly handling the unauthorized case, and not other unexpected errors.
+    if (
+      (res.status !== 200 && res.status !== 401) ||
+      (axiosData.status !== 0 && axiosData.status !== 3)
+    )
+      throw this.error('Failed to validate account token with Grypline API.', axiosData);
+
+    return res.status === 200 && axiosData.status === 0;
   }
 
   /**
@@ -128,22 +154,23 @@ class EndfieldService extends BaseService {
    * If it's not valid or not set, fetch the Skport user once (which will also generate a new CRED if needed).
    */
   async revalidateCredAndFetchUser() {
-    let isValid = true;
-
     // If cred is set, check if it's valid.
     if (this.cred) {
       const check = await this.getSkportUser().catch((e: ServiceError | Error) => e);
       if (check instanceof ServiceError) {
         // 10002 'User is not logged in'
-        if (check.data?.code === 10002) isValid = false;
-        else throw check;
+        if (check.data?.code === 10002) {
+          // Try generate cred again, maybe it's expired.
+          await this.generateCred();
+          await this.getSkportUser();
+        } else throw check;
       } else if (check instanceof Error) {
         // Maybe network error or something else, just throw it.
         throw check;
       }
+    } else {
+      await this.getSkportUser();
     }
-
-    if (!isValid || !this.cred) await this.getSkportUser();
   }
 
   /**
