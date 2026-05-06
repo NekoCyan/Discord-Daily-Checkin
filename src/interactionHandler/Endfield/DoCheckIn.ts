@@ -3,7 +3,7 @@ import BotClient from '../../BotClient.js';
 import EndfieldModel from '../../models/Endfield.js';
 import EndfieldService from '../../services/endfield.service.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
-import { EndfieldRewardSection, EndfieldSeparator, EndfieldTextDisplay } from './helper.js';
+import { EndfieldRewardSection, EndfieldSeparator, EndfieldTextDisplay } from './_helper.js';
 
 /**
  * Handle the check-in process for Endfield, including token validation and database updates.
@@ -72,11 +72,15 @@ export async function EndfieldDoCheckIn(
   await endfieldModel.updateOnChange(service.toObject(), false);
   await endfieldModel.save(); // Manual save to ensure all field (includes lastDailyChecked) are updated in database.
 
-  if (checkedIn === true) return void 0; // Successfully checked in, continue to update the database.
+  if (checkedIn === true) return; // Successfully checked in, continue to update the database.
 
   // Render section.
   const container = new ContainerBuilder();
 
+  // Header.
+  container.addTextDisplayComponents(EndfieldTextDisplay(`## Check-in Successful!`));
+  // Separator.
+  container.addSeparatorComponents(EndfieldSeparator());
   // Today's rewards.
   container.addTextDisplayComponents(
     EndfieldTextDisplay(`> ## Today's Rewards (Day ${checkInInfo.currentDay}):`),

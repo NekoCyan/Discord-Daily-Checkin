@@ -8,7 +8,7 @@ import {
   EndfieldSeparator,
   EndfieldTextDisplay,
   EndfieldUserSection,
-} from './helper.js';
+} from './_helper.js';
 
 export async function EndfieldProfile(
   int: CommandInteraction | ContextMenuInteraction,
