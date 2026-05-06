@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import EndfieldService from '../services/endfield.service.js';
 import { timestampStartOfTheDay } from '../utilities/Utils.js';
-import { extractSchemaKeys } from './helper.js';
+import { extractSchemaKeys } from './_helper.js';
 import {
   IEndfield,
   IEndfieldInstanceMethods,
