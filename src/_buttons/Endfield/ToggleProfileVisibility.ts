@@ -1,5 +1,5 @@
 import { ButtonHandler } from '../../../types/index.js';
-import { EndfieldSetVisibility } from '../../interactionHandler/Endfield/SetVisibility.js';
+import { EndfieldSetVisibility } from '../../helper/Endfield/SetVisibility.js';
 
 export default {
   status: true,

@@ -5,7 +5,7 @@ import {
   InteractionContextType,
 } from 'discord.js';
 import { ContextMenuHandler } from '../../../types/index.js';
-import { EndfieldProfile } from '../../interactionHandler/Endfield/Profile.js';
+import { EndfieldProfile } from '../../helper/Endfield/Profile.js';
 
 export default {
   status: true,

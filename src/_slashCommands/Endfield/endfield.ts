@@ -4,13 +4,13 @@ import {
   SlashCommandBuilder,
 } from 'discord.js';
 import { SlashCommandHandler } from '../../../types/index.js';
-import { EndfieldDoCheckIn } from '../../interactionHandler/Endfield/DoCheckIn.js';
-import { EndfieldProfile } from '../../interactionHandler/Endfield/Profile.js';
+import { EndfieldDoCheckIn } from '../../helper/Endfield/DoCheckIn.js';
+import { EndfieldProfile } from '../../helper/Endfield/Profile.js';
 import {
   EndfieldResetAccountToken,
   EndfieldSetAccountToken,
   EndfieldSetVisibility,
-} from '../../interactionHandler/Endfield/index.js';
+} from '../../helper/Endfield/index.js';
 import EndfieldModel from '../../models/Endfield.js';
 
 export default {
