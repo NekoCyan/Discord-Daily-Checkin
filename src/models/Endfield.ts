@@ -50,18 +50,14 @@ EndfieldSchema.methods = {
     return hasChanges;
   },
   isDailyChecked() {
-    const timeNow = timestampStartOfTheDay(EndfieldService.Constants.DAILY_RESET_TIMEZONE)!.format(
-      'YYYY-MM-DD',
-    );
+    const timeNow = EndfieldModel.getDailyDateToday();
 
     return this.lastDailyChecked === timeNow;
   },
   async markLastDailyAsToday(save = true) {
     if (this.isDailyChecked()) return;
 
-    const timeNow = timestampStartOfTheDay(EndfieldService.Constants.DAILY_RESET_TIMEZONE)!.format(
-      'YYYY-MM-DD',
-    );
+    const timeNow = EndfieldModel.getDailyDateToday();
 
     this.lastDailyChecked = timeNow;
     if (save) await this.save();
@@ -77,6 +73,11 @@ EndfieldSchema.methods = {
 
 // statics.
 EndfieldSchema.statics = {
+  getDailyDateToday() {
+    return timestampStartOfTheDay(EndfieldService.Constants.DAILY_RESET_TIMEZONE)!.format(
+      'YYYY-MM-DD',
+    );
+  },
   getOrCreate(discordId) {
     return this.findOneAndUpdate(
       { discordId },

@@ -37,6 +37,7 @@ class EndfieldService extends BaseService {
       VNAME: '1.0.0',
       ENDFIELD_GAME_ID: '3',
       URLS: {
+        CHECKIN_WEB: 'https://game.skport.com/endfield/sign-in',
         THIRD_PARTY_INFO: 'https://as.gryphline.com/user/info/v1/third_party',
         GRANT: 'https://as.gryphline.com/user/oauth2/v2/grant',
         GENERATE_CRED: 'https://zonai.skport.com/web/v1/user/auth/generate_cred_by_code',

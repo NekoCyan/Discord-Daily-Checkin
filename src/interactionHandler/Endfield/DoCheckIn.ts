@@ -45,6 +45,7 @@ export async function EndfieldDoCheckIn(
     await endfieldModel.markLastDailyAsToday(false);
     await endfieldModel.updateOnChange(service.toObject(), false);
     await endfieldModel.save(); // Manual save to ensure all field (includes lastDailyChecked) are updated in database.
+
     if (int)
       return int.SendOrEdit(
         [
@@ -65,14 +66,34 @@ export async function EndfieldDoCheckIn(
   }
 
   // So separate the saving process incase failed to do check-in next time.
-  const checkedIn = await service.doCheckIn();
+  const checkedIn = await service.doCheckIn().catch(() => null);
 
   // Immediately update the database to and announce the result.
   await endfieldModel.markLastDailyAsToday(false);
   await endfieldModel.updateOnChange(service.toObject(), false);
   await endfieldModel.save(); // Manual save to ensure all field (includes lastDailyChecked) are updated in database.
 
-  if (checkedIn === true) return; // Successfully checked in, continue to update the database.
+  // When successful checked in, continue to update the database and no need to announce.
+  if (checkedIn === true) return;
+  // But incase failed to check in, should announce the failure and tell user to do manual check-in.
+  if (checkedIn === null) {
+    const onWeb = `[on the Website](<${EndfieldService.Constants.URLS.CHECKIN_WEB}>)`;
+    const errMsg =
+      'Failed to check-in to Endfield, possibly due to network issue or Endfield server issue.';
+    if (int)
+      return int.SendOrEdit(
+        [errMsg, `Please try again command again or check-in manually ${onWeb}.`].join('\n'),
+      );
+    else
+      return user
+        .send(
+          [
+            errMsg,
+            `Please try again with command ${client.mentionSlashCommand('endfield check-in')} or check-in manually ${onWeb}.`,
+          ].join('\n'),
+        )
+        .catch((e) => e);
+  }
 
   // Render section.
   const container = new ContainerBuilder();

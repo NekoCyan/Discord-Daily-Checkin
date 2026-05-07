@@ -47,6 +47,11 @@ export interface IEndfieldInstanceMethods {
   resetOnUnauthorized: () => Promise<void>;
 }
 export interface IEndfieldStaticsMethods {
+  /**
+   * Get today's date in 'YYYY-MM-DD' format based on the daily reset timezone defined in {EndfieldService.Constants.DAILY_RESET_TIMEZONE}.
+   * @returns A string representing today's date in 'YYYY-MM-DD' format.
+   */
+  getDailyDateToday(): string;
   getOrCreate(discordId: string): Promise<EndfieldHydratedDocument>;
 }
 export type IEndfieldStatics = WithThis<IEndfieldModel, IEndfieldStaticsMethods>;
