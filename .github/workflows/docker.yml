@@ -65,5 +65,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Create stub .env.production for validation
+        run: cp .env.example .env.production
+
       - name: Validate compose configuration
         run: docker compose ${{ matrix.args }} config --quiet
