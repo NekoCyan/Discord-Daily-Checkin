@@ -4,6 +4,15 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 /**
+ * Delays execution for a specified number of milliseconds.
+ * @param ms - The number of milliseconds to sleep before the promise resolves.
+ * @returns A promise that resolves after the specified delay.
+ */
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
  * Resolves a relative file path to an absolute file URL, which can be used for dynamic imports.
  * @param relativePath - The relative path to the file from the current module.
  * @returns The absolute file URL as a string.

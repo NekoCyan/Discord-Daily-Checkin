@@ -1,4 +1,4 @@
-import type { ContextMenuCommandBuilder, SlashCommandBuilder } from 'discord.js';
+import type { ClientOptions, ContextMenuCommandBuilder, SlashCommandBuilder } from 'discord.js';
 import BotClient from '../src/BotClient.ts';
 import AutoCompleteInteraction from '../src/utilities/interaction/autocomplete.interaction.ts';
 import ButtonInteraction from '../src/utilities/interaction/button.interaction.ts';
@@ -17,6 +17,10 @@ export declare global {
   }
 
   var logger: ReturnType<typeof _logger>;
+}
+
+export interface BotClientOptions extends ClientOptions {
+  batchCheckInOptions?: BatchCheckInOptions;
 }
 
 export interface EventHandler<Args extends unknown[] = unknown[]> {
@@ -71,4 +75,19 @@ export interface ContextMenuHandler {
    */
   metadata: ContextMenuCommandBuilder;
   run: (interaction: ContextMenuInteraction) => Promise<void>;
+}
+
+export interface BatchCheckInOptions {
+  /**
+   * Optional batch of users size to do check-in, default to 10
+   */
+  batchSize?: number;
+  /**
+   * Optional delay between batches in milliseconds, default to 0ms (no delay)
+   */
+  delayPerBatchMs?: number;
+  /**
+   * Optional number of concurrent batches, default to 1 (no concurrency)
+   */
+  concurrency?: number;
 }

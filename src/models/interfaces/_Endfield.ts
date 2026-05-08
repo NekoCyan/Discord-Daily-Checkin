@@ -53,6 +53,14 @@ export interface IEndfieldStaticsMethods {
    */
   getDailyDateToday(): string;
   getOrCreate(discordId: string): Promise<EndfieldHydratedDocument>;
+  /**
+   * Get a batch of Endfield documents that have not performed their daily check-in today.
+   * This method is useful for processing daily rewards or notifications for users who haven't checked in yet.
+   * The method retrieves a specified number of documents where the `lastDailyChecked` field does not match today's date.
+   * @param size The number of documents to retrieve in the batch.
+   * @returns A promise that resolves to an array of Endfield documents that have not checked in today.
+   */
+  getBatchUncheckedDaily(size: number): Promise<EndfieldHydratedDocument[]>;
 }
 export type IEndfieldStatics = WithThis<IEndfieldModel, IEndfieldStaticsMethods>;
 export interface IEndfieldModel

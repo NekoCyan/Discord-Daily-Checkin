@@ -85,6 +85,16 @@ EndfieldSchema.statics = {
       { upsert: true, returnDocument: 'after' },
     ).exec();
   },
+  getBatchUncheckedDaily(size) {
+    const timeNow = this.getDailyDateToday();
+
+    return this.find({
+      accountToken: { $ne: '' },
+      lastDailyChecked: { $ne: timeNow },
+    })
+      .limit(size)
+      .exec();
+  },
 };
 
 // middlewares.

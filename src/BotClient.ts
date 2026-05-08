@@ -1,14 +1,17 @@
-import { APIApplicationCommand, Client, ClientOptions, Collection, Options } from 'discord.js';
+import { APIApplicationCommand, Client, Collection, Options } from 'discord.js';
 import path from 'node:path';
-import { ButtonHandler, ContextMenuHandler, SlashCommandHandler } from '../types/index.js';
+import {
+  BatchCheckInOptions,
+  BotClientOptions,
+  ButtonHandler,
+  ContextMenuHandler,
+  SlashCommandHandler,
+} from '../types/index.js';
 import { entryPath } from './entryPath.js';
 import { resolveDynamicImportPath } from './utilities/Utils.js';
 
 const handlerPath = path.resolve(entryPath, './handler');
 const allHandlers = ['events', 'commandRegistration', 'buttons'];
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface BotClientOptions extends ClientOptions {}
 
 export default class BotClient extends Client<true> {
   /**
@@ -27,10 +30,11 @@ export default class BotClient extends Client<true> {
   contextMenus = new Collection<string, ContextMenuHandler>();
   contextMenusRequested = new Collection<string, APIApplicationCommand>();
 
+  batchCheckInOptions: Required<BatchCheckInOptions>;
+
   constructor(options: BotClientOptions) {
-    super(options);
-    this.options = {
-      ...this.options,
+    super({
+      ...options,
       // I disable caching all cuz of 1gb ram hosting ehe ~
       makeCache: Options.cacheWithLimits({
         VoiceStateManager: 0,
@@ -58,6 +62,36 @@ export default class BotClient extends Client<true> {
         EntitlementManager: 0,
         GuildForumThreadManager: 0,
       }),
+    });
+
+    this.batchCheckInOptions = this.#_validateBatchCheckInOptions(options.batchCheckInOptions);
+  }
+
+  #_validateBatchCheckInOptions(options?: BatchCheckInOptions) {
+    const defaultOptions = {
+      batchSize: 10,
+      delayPerBatchMs: 0,
+      concurrency: 1,
+    };
+
+    if (!options) return defaultOptions;
+
+    if ('batchSize' in options) {
+      if (options.batchSize <= 0) throw new Error('batchSize must be a positive number.');
+    }
+
+    if ('delayPerBatchMs' in options) {
+      if (options.delayPerBatchMs < 0)
+        throw new Error('delayPerBatchMs must be a non-negative number.');
+    }
+
+    if ('concurrency' in options) {
+      if (options.concurrency <= 0) throw new Error('concurrency must be a positive number.');
+    }
+
+    return {
+      ...defaultOptions,
+      ...options,
     };
   }
 

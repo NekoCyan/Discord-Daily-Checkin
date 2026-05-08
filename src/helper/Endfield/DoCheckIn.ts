@@ -50,7 +50,7 @@ export async function EndfieldDoCheckIn(
       return int.SendOrEdit(
         [
           'You have already checked in today.',
-          `If you want to see what did you receive today, use ${client.mentionSlashCommand('endfield profile')}.`,
+          `If you want to see what you received today, use ${client.mentionSlashCommand('endfield profile')}.`,
           nextCheckInTime,
         ].join('\n'),
       );
@@ -58,7 +58,9 @@ export async function EndfieldDoCheckIn(
       return user
         .send(
           [
+            '## Endfield check-in Skipped.',
             'Looks like you have already checked in today so skipped the check-in process.',
+            `If you want to see what you received today, use ${client.mentionSlashCommand('endfield profile')}.`,
             nextCheckInTime,
           ].join('\n'),
         )
@@ -99,7 +101,7 @@ export async function EndfieldDoCheckIn(
   const container = new ContainerBuilder();
 
   // Header.
-  container.addTextDisplayComponents(EndfieldTextDisplay(`## Check-in Successful!`));
+  container.addTextDisplayComponents(EndfieldTextDisplay(`## Endfield check-in successful!`));
   // Separator.
   container.addSeparatorComponents(EndfieldSeparator());
   // Today's rewards.
