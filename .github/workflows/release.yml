@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-upload:
+    name: Build & Upload Release Assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Package assets
+        run: |
+          RELEASE_NAME="release-${{ github.event.release.tag_name }}"
+          mkdir -p "_release/$RELEASE_NAME"
+          cp -r dist "./_release/$RELEASE_NAME/dist"
+          cp -r src "./_release/$RELEASE_NAME/src"
+          cp -r types "./_release/$RELEASE_NAME/types"
+          cp .env.example package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json Dockerfile docker-compose.yml docker-compose.mongo.yml "./_release/$RELEASE_NAME/"
+          cd _release && zip -r "../${RELEASE_NAME}.zip" "$RELEASE_NAME"
+          echo "RELEASE_ZIP=${RELEASE_NAME}.zip" >> $GITHUB_ENV
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.RELEASE_ZIP }}
