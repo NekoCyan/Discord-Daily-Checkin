@@ -8,6 +8,7 @@ import {
   SlashCommandHandler,
 } from '../types/index.js';
 import { entryPath } from './entryPath.js';
+import { BatchDefaultOptions } from './utilities/Constants.js';
 import { resolveDynamicImportPath } from './utilities/Utils.js';
 
 const handlerPath = path.resolve(entryPath, './handler');
@@ -67,30 +68,29 @@ export default class BotClient extends Client<true> {
     this.batchCheckInOptions = this.#_validateBatchCheckInOptions(options.batchCheckInOptions);
   }
 
-  #_validateBatchCheckInOptions(options?: BatchCheckInOptions) {
-    const defaultOptions = {
-      batchSize: 10,
-      delayPerBatchMs: 0,
-      concurrency: 1,
-    };
+  #_validateBatchCheckInOptions(options: Partial<BatchCheckInOptions>) {
+    if (!options) return BatchDefaultOptions;
 
-    if (!options) return defaultOptions;
+    // Delete properties that are explicitly set to undefined, and validate values if they are provided
 
     if ('batchSize' in options) {
-      if (options.batchSize <= 0) throw new Error('batchSize must be a positive number.');
+      if (typeof options.batchSize === 'undefined') delete options['batchSize'];
+      else if (options.batchSize <= 0) throw new Error('batchSize must be a positive number.');
     }
 
     if ('delayPerBatchMs' in options) {
-      if (options.delayPerBatchMs < 0)
+      if (typeof options.delayPerBatchMs === 'undefined') delete options['delayPerBatchMs'];
+      else if (options.delayPerBatchMs < 0)
         throw new Error('delayPerBatchMs must be a non-negative number.');
     }
 
     if ('concurrency' in options) {
-      if (options.concurrency <= 0) throw new Error('concurrency must be a positive number.');
+      if (typeof options.concurrency === 'undefined') delete options['concurrency'];
+      else if (options.concurrency <= 0) throw new Error('concurrency must be a positive number.');
     }
 
     return {
-      ...defaultOptions,
+      ...BatchDefaultOptions,
       ...options,
     };
   }

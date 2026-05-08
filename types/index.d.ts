@@ -20,7 +20,7 @@ export declare global {
 }
 
 export interface BotClientOptions extends ClientOptions {
-  batchCheckInOptions?: BatchCheckInOptions;
+  batchCheckInOptions: BatchCheckInOptions;
 }
 
 export interface EventHandler<Args extends unknown[] = unknown[]> {
@@ -81,13 +81,13 @@ export interface BatchCheckInOptions {
   /**
    * Optional batch of users size to do check-in, default to 10
    */
-  batchSize?: number;
+  batchSize: number | undefined;
   /**
    * Optional delay between batches in milliseconds, default to 0ms (no delay)
    */
-  delayPerBatchMs?: number;
+  delayPerBatchMs: number | undefined;
   /**
    * Optional number of concurrent batches, default to 1 (no concurrency)
    */
-  concurrency?: number;
+  concurrency: number | undefined;
 }
