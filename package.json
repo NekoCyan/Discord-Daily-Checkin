@@ -24,6 +24,7 @@
     "docker:prod:down:mongo": "docker compose -f docker-compose.yml -f docker-compose.mongo.yml down"
   },
   "keywords": [
+    "discord-bot",
     "arknights-endfield",
     "endfield-daily-checkin"
   ],
