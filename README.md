@@ -8,12 +8,15 @@ A Discord bot that automatically performs daily check-ins for **Arknights: Endfi
 
 ## Environment Variables
 
-| Variable        | Description                     | Required                            |
-| --------------- | ------------------------------- | ----------------------------------- |
-| `DISCORD_TOKEN` | Your Discord bot token          | Yes                                 |
-| `MONGODB_URI`   | MongoDB connection URI          | Yes                                 |
-| `MONGODB_NAME`  | Database name                   | No (default: `DiscordDailyCheckin`) |
-| `LOG_LEVEL`     | Logging level (`debug`, `info`) | No (default: `info`)                |
+| Variable             | Description                                         | Required                             |
+| -------------------- | --------------------------------------------------- | ------------------------------------ |
+| `DISCORD_TOKEN`      | Your Discord bot token                              | Yes                                  |
+| `MONGODB_URI`        | MongoDB connection URI                              | Yes                                  |
+| `MONGODB_NAME`       | Database name                                       | Yes (default: `DiscordDailyCheckin`) |
+| `LOG_LEVEL`          | Logging level (`debug`, `info`)                     | No (default: `info`)                 |
+| `BATCH_SIZE`         | Number of accounts processed per batch              | No (default: `10`)                   |
+| `DELAY_PER_BATCH_MS` | Delay in milliseconds between each batch            | No (default: `0`)                    |
+| `CONCURRENCY`        | Number of accounts processed concurrently per batch | No (default: `1`)                    |
 
 ---
 
