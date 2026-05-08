@@ -15,12 +15,12 @@ services:
     env_file:
       - .env.development
     ports:
-      - "27018:27017" # prevent conflict with local MongoDB
+      - '27018:27017' # prevent conflict with local MongoDB
     volumes:
       - ./data/mongo:/data/db # store data in project workspace
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
-      interval: 3650d # ← effectively never re-runs (10 years)
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 60s
       timeout: 5s
       retries: 5
       start_period: 10s # ← give mongo time to boot before first check
