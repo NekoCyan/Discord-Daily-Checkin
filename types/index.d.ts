@@ -19,6 +19,10 @@ export declare global {
   var logger: ReturnType<typeof _logger>;
 }
 
+type Defined<T> = {
+  [K in keyof T]-?: NonNullable<T[K]>;
+};
+
 export interface BotClientOptions extends ClientOptions {
   batchCheckInOptions: BatchCheckInOptions;
 }
@@ -91,3 +95,4 @@ export interface BatchCheckInOptions {
    */
   concurrency: number | undefined;
 }
+export type QualifiedBatchCheckInOptions = Defined<BatchCheckInOptions>;

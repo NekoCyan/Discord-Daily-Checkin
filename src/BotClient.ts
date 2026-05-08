@@ -5,6 +5,7 @@ import {
   BotClientOptions,
   ButtonHandler,
   ContextMenuHandler,
+  QualifiedBatchCheckInOptions,
   SlashCommandHandler,
 } from '../types/index.js';
 import { entryPath } from './entryPath.js';
@@ -31,7 +32,7 @@ export default class BotClient extends Client<true> {
   contextMenus = new Collection<string, ContextMenuHandler>();
   contextMenusRequested = new Collection<string, APIApplicationCommand>();
 
-  batchCheckInOptions: Required<BatchCheckInOptions>;
+  batchCheckInOptions: QualifiedBatchCheckInOptions;
 
   constructor(options: BotClientOptions) {
     super({
@@ -92,7 +93,7 @@ export default class BotClient extends Client<true> {
     return {
       ...BatchDefaultOptions,
       ...options,
-    };
+    } as QualifiedBatchCheckInOptions;
   }
 
   /**

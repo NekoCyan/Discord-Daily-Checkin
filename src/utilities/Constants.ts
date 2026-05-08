@@ -1,6 +1,6 @@
-import { BatchCheckInOptions } from '../../types/index.js';
+import { QualifiedBatchCheckInOptions } from '../../types/index.js';
 
-export const BatchDefaultOptions: Required<BatchCheckInOptions> = {
+export const BatchDefaultOptions: QualifiedBatchCheckInOptions = {
   batchSize: 10,
   delayPerBatchMs: 0,
   concurrency: 1,

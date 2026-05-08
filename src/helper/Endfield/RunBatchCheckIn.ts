@@ -1,6 +1,6 @@
 import { DiscordAPIError } from 'discord.js';
 import PQueue from 'p-queue';
-import { BatchCheckInOptions } from '../../../types/index.js';
+import { QualifiedBatchCheckInOptions } from '../../../types/index.js';
 import BotClient from '../../BotClient.js';
 import EndfieldModel from '../../models/Endfield.js';
 import { EndfieldHydratedDocument } from '../../models/interfaces/_Endfield.js';
@@ -23,7 +23,7 @@ const msg = (message: string, count?: number) =>
  */
 export async function EndfieldRunBatchCheckIn(
   client: BotClient,
-  options: Required<BatchCheckInOptions>,
+  options: QualifiedBatchCheckInOptions,
 ) {
   if (isRunning) return logger.warn(msg('Previous batch still in progress, skipping this run.'));
   isRunning = true;
