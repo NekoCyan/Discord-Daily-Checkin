@@ -1,5 +1,6 @@
 services:
   worker:
+    image: ${IMAGE:-}
     build:
       context: .
       target: runner
