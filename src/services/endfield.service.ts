@@ -22,13 +22,11 @@ class EndfieldService extends BaseService {
   binding: PlayerBinding | null = null;
   skportUser: SkportUserResponse['data'] | null = null;
 
-  constructor(options?: EndfieldServiceOptions) {
+  constructor(options: EndfieldServiceOptions) {
     super();
 
-    if (options) {
-      this.#accountToken = options.accountToken;
-      this.cred = options.cred ?? '';
-    }
+    this.#accountToken = options.accountToken;
+    this.cred = options.cred ?? '';
   }
 
   static get Constants() {
@@ -60,6 +58,8 @@ class EndfieldService extends BaseService {
     return {
       ..._DefaultHeaders,
       'content-type': 'application/json',
+      origin: 'https://game.skport.com',
+      referer: 'https://game.skport.com/',
     };
   }
 
