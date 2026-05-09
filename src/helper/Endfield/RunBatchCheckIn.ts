@@ -15,10 +15,17 @@ const msg = (message: string, count?: number) =>
     : `[Endfield/BatchCheckIn] ${message}`;
 
 /**
- * Runs the batch check-in process for Endfield users. This function is designed to be called on a scheduled basis (e.g., daily) to check in all users who haven't been checked in for the day.
- * This function should be called whenever the bot client is ready or in a scheduled task (e.g., using cron) to ensure that users are checked in on a regular basis.
+ * Runs the batch check-in process for Endfield users. This function is designed to be called on a
+ * scheduled basis (e.g., daily) to check in all users who haven't been checked in for the day.
+ * This function should be called by the service scheduler at the scheduled times, and it
+ * can also be triggered manually if needed (e.g., for testing or if a scheduled run fails).
+ *
+ * This batch check-in process works by fetching users in batches (based on the specified batch size),
+ * checking them in concurrently (based on the specified concurrency), and introducing a delay between
+ * batches to avoid hitting rate limits. The function continues to fetch and process batches until there
+ * are no more users left to check in for the day.
  * @param client The bot client instance.
- * @param options The options for the batch check-in process, including batch size, delay per batch, and concurrency.
+ * @param options The options for the batch check-in process.
  * @returns A promise that resolves when the batch check-in process is complete.
  */
 export async function EndfieldRunBatchCheckIn(
