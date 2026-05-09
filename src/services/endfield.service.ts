@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'node:crypto';
 import { ServiceError } from '../errors/ServiceError.js';
+import { _DefaultHeaders } from '../utilities/Constants.js';
 import { newAxiosInstance } from '../utilities/Request.js';
 import { timestampStartOfTheDay } from '../utilities/Utils.js';
 import BaseService from './baseService.js';
@@ -57,6 +58,7 @@ class EndfieldService extends BaseService {
 
   get defaultHeaders() {
     return {
+      ..._DefaultHeaders,
       'content-type': 'application/json',
     };
   }

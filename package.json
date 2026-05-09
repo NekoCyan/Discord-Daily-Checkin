@@ -14,6 +14,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"types/*.ts\" \"**/*.{md,yml}\"",
     "format:check": "prettier --check \"src/**/*.ts\" \"types/*.ts\" \"**/*.{md,yml}\"",
     "type-check": "tsc --noEmit",
+    "checks": "pnpm format:check && pnpm lint && pnpm type-check",
     "docker:dev": "docker compose -f docker-compose.dev.yml up -d",
     "docker:dev:build": "docker compose -f docker-compose.dev.yml build",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
