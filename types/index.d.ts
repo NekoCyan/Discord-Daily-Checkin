@@ -96,3 +96,18 @@ export interface BatchCheckInOptions {
   concurrency: number | undefined;
 }
 export type QualifiedBatchCheckInOptions = Defined<BatchCheckInOptions>;
+
+export interface CurrentTotal {
+  current: number;
+  total: number;
+}
+
+export interface KeyValue {
+  key: string;
+  value: string;
+}
+
+export interface CountTotal {
+  count: number;
+  total: number;
+}

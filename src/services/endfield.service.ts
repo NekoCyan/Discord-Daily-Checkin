@@ -1,5 +1,6 @@
 import axios from 'axios';
 import crypto from 'node:crypto';
+import { CountTotal, CurrentTotal, KeyValue } from '../../types/index.js';
 import { ServiceError } from '../errors/ServiceError.js';
 import { _DefaultHeaders } from '../utilities/Constants.js';
 import { newAxiosInstance } from '../utilities/Request.js';
@@ -45,6 +46,8 @@ class EndfieldService extends BaseService {
         ATTENDANCE: 'https://zonai.skport.com/web/v1/game/endfield/attendance',
         USER_CHECK: 'https://zonai.skport.com/web/v1/user/check',
         USER_INFO: 'https://zonai.skport.com/web/v2/user',
+        REAL_TIME: 'https://zonai.skport.com/api/v1/game/endfield/statistic',
+        REAL_TIME_DETAIL: 'https://zonai.skport.com/api/v1/game/endfield/card/detail',
       },
       DAILY_RESET_TIMEZONE: 'Asia/Hong_Kong',
     };
@@ -79,7 +82,7 @@ class EndfieldService extends BaseService {
   }
 
   /**
-   * Get the player binding code for Endfield game in the format of `${gameId}_${roleId}_${serverId}`.
+   * Get the player binding code for Endfield game to do check-in with the format of `${gameId}_${roleId}_${serverId}`.
    */
   get bindingCode() {
     if (!this.binding)
@@ -578,6 +581,60 @@ class EndfieldService extends BaseService {
   }
 
   /**
+   * Fetch the Endfield in-game real-time to get data like weekly progress count, sanity replenishment, etc.
+   * @returns The real-time data object if the request is successful.
+   * @throws If the API request fails.
+   * @note This method will automatically call `generateCred()` and `getSignToken()` if `this.cred` or `this.token` is not set, respectively.
+   */
+  async getRealTimeData() {
+    if (!this.cred) await this.generateCred();
+    if (!this.token) await this.getSignToken();
+
+    const url = this.Constants.URLS.REAL_TIME;
+    const authorizedHeaders = this.AuthorizedHeaders(url);
+
+    const res = await newAxiosInstance().get<SkportRealTimeDataResponse>(url, {
+      headers: {
+        ...this.skportHeaders,
+        ...authorizedHeaders,
+      },
+    });
+
+    const axiosData = res.data;
+
+    if (res.status >= 400) throw this.error('Failed to get real-time data.', axiosData);
+
+    return axiosData.data;
+  }
+
+  /**
+   * Fetch the Endfield in-game real-time data with more detail like characters, equipments, achievements, etc.
+   * @returns The real-time data detail object if the request is successful.
+   * @throws If the API request fails.
+   * @note This method will automatically call `generateCred()` and `getSignToken()` if `this.cred` or `this.token` is not set, respectively.
+   */
+  async getRealTimeDataDetail() {
+    if (!this.cred) await this.generateCred();
+    if (!this.token) await this.getSignToken();
+
+    const url = this.Constants.URLS.REAL_TIME_DETAIL;
+    const authorizedHeaders = this.AuthorizedHeaders(url);
+
+    const res = await newAxiosInstance().get<SkportRealTimeDataDetailResponse>(url, {
+      headers: {
+        ...this.skportHeaders,
+        ...authorizedHeaders,
+      },
+    });
+
+    const axiosData = res.data;
+
+    if (res.status >= 400) throw this.error('Failed to get real-time data detail.', axiosData);
+
+    return axiosData.data;
+  }
+
+  /**
    * Compute the sign header value based on the request path, body, timestamp, and sign token using the following steps:
    * @param path The URL path of the API endpoint (e.g., `/web/v1/game/endfield/attendance`).
    * @param body The request body as a JSON string. For GET requests, this can be an empty string.
@@ -774,3 +831,321 @@ type SkportUserResponse = SkportResponse<{
   userInfoApply: object;
   moderator: SkportModerator;
 }>;
+
+interface RealTimeData {
+  bp: CurrentTotal;
+  dailyMission: CurrentTotal;
+  /**
+   * Sanity.
+   */
+  dungeon: CurrentTotal & { maxTs: string };
+  pic: string;
+  signIn: boolean;
+  weeklyMission: CurrentTotal;
+}
+type SkportRealTimeDataResponse = SkportResponse<{
+  data: RealTimeData;
+  signUrl: string;
+  bindUrl: string;
+  openUrl: string;
+  detailUrl: string;
+  jumpUrl: string;
+  currentTs: string;
+  gameLogo: string;
+}>;
+
+type SkportRealTimeDataDetailResponse = SkportResponse<{
+  detail: RealTimeDataDetail;
+}>;
+interface RealTimeDataDetail {
+  base: PlayerBase;
+  chars: CharEntry[];
+  achieve: AchieveSection;
+  spaceShip: SpaceShip;
+  domain: Domain[];
+  /**
+   * Sanity.
+   */
+  dungeon: Dungeon;
+  bpSystem: BpSystem;
+  dailyMission: DailyMission;
+  weeklyMission: WeeklyMission;
+  config: PlayerConfig;
+  currentTs: string;
+  quickaccess: QuickAccess[];
+}
+interface PlayerBase {
+  serverName: string;
+  roleId: string;
+  name: string;
+  createTime: string;
+  saveTime: string;
+  lastLoginTime: string;
+  exp: number;
+  level: number;
+  worldLevel: number;
+  gender: number;
+  avatarUrl: string;
+  mainMission: MainMission;
+  charNum: number;
+  weaponNum: number;
+  docNum: number;
+}
+interface MainMission {
+  id: string;
+  description: string;
+}
+interface CharEntry {
+  charData: CharData;
+  id: string;
+  level: number;
+  userSkills: Record<string, UserSkill>;
+  bodyEquip: EquipSlot;
+  armEquip: EquipSlot;
+  firstAccessory: EquipSlot;
+  secondAccessory: EquipSlot;
+  tacticalItem: TacticalItemSlot;
+  evolvePhase: number;
+  potentialLevel: number;
+  weapon: WeaponSlot;
+  gender: string;
+  ownTs: string;
+  wikiItemId: string;
+  talent: TalentTree;
+}
+interface CharData {
+  id: string;
+  name: string;
+  avatarSqUrl: string;
+  avatarRtUrl: string;
+  rarity: KeyValue;
+  profession: KeyValue;
+  property: KeyValue;
+  weaponType: KeyValue;
+  skills: CharSkill[];
+  illustrationUrl: string;
+  tags: string[];
+  abilityTalents: Talent[];
+  combatTalents: Talent[];
+  cultivationTalents: Talent[];
+  /** Present only on limited/rate-up characters */
+  labelType?: string;
+}
+interface CharSkill {
+  id: string;
+  name: string;
+  type: KeyValue;
+  property: KeyValue;
+  iconUrl: string;
+  desc: string;
+  descParams: Record<string, string>;
+  descLevelParams: Record<string, SkillLevelParams>;
+}
+interface SkillLevelParams {
+  level: string;
+  params: Record<string, string>;
+}
+/** User-owned skill level info, keyed by skill id */
+interface UserSkill {
+  skillId: string;
+  level: number;
+  maxLevel: number;
+}
+interface Talent {
+  id: string;
+  name: string;
+  iconUrl: string;
+  desc: string;
+  descParams: Record<string, string>;
+  lockedIconUrl: string;
+}
+interface TalentTree {
+  latestBreakNode: string;
+  attrNodes: string[];
+  latestPassiveSkillNodes: string[];
+  latestFactorySkillNodes: string[];
+  latestSpaceshipSkillNodes: string[];
+}
+interface EquipSlot {
+  equipId: string;
+  equipData: EquipData;
+}
+interface EquipData {
+  id: string;
+  name: string;
+  iconUrl: string;
+  rarity: KeyValue;
+  type: KeyValue;
+  level: KeyValue;
+  properties: string[];
+  isAccessory: boolean;
+  /** null when the item does not belong to a set */
+  suit: EquipSuit | null;
+  function: string;
+  pkg: string;
+}
+interface EquipSuit {
+  id: string;
+  name: string;
+  skillId: string;
+  skillDesc: string;
+  skillDescParams: Record<string, string>;
+}
+interface TacticalItemSlot {
+  tacticalItemId: string;
+  tacticalItemData: TacticalItemData;
+}
+interface TacticalItemData {
+  id: string;
+  name: string;
+  iconUrl: string;
+  rarity: KeyValue;
+  activeEffectType: KeyValue;
+  activeEffect: string;
+  passiveEffect: string;
+  activeEffectParams: Record<string, string>;
+  passiveEffectParams: Record<string, string>;
+}
+interface WeaponSlot {
+  weaponData: WeaponData;
+  level: number;
+  refineLevel: number;
+  breakthroughLevel: number;
+  /** null when no gem is socketed */
+  gem: WeaponGemSlot | null;
+  wikiItemId: string;
+}
+interface WeaponData {
+  id: string;
+  name: string;
+  iconUrl: string;
+  rarity: KeyValue;
+  type: KeyValue;
+  function: string;
+  description: string;
+  skills: KeyValue[];
+  /** Present only on limited/rate-up weapons */
+  labelType?: string;
+}
+interface WeaponGemSlot {
+  id: string;
+  icon: string;
+  gemData: GemData;
+}
+interface GemData {
+  termId: string;
+  name: string;
+  icon: string;
+  templateId: string;
+}
+interface AchieveSection {
+  achieveMedals: AchieveMedal[];
+  /** Slot number (1-10) → achievement id */
+  display: Record<string, string>;
+  count: number;
+}
+interface AchieveMedal {
+  achievementData: AchievementData;
+  level: number;
+  isPlated: boolean;
+  obtainTs: string;
+}
+interface AchievementData {
+  id: string;
+  name: string;
+  initIcon: string;
+  reforge2Icon: string;
+  reforge3Icon: string;
+  platedIcon: string;
+  cateName: string;
+  canCertify: boolean;
+  cate: string;
+  initLevel: number;
+}
+interface SpaceShip {
+  rooms: SpaceShipRoom[];
+}
+interface SpaceShipRoom {
+  id: string;
+  type: number;
+  level: number;
+  chars: SpaceShipRoomChar[];
+  reports: Record<string, unknown>;
+}
+interface SpaceShipRoomChar {
+  charId: string;
+  physicalStrength: number;
+  favorability: number;
+  avatarUrl: string;
+}
+interface Domain {
+  domainId: string;
+  level: number;
+  name: string;
+  settlements: Settlement[];
+  moneyMgr: MoneyMgr;
+  collections: DomainCollection[];
+  levels: DomainLevel[];
+  /** Reserved – always null in current data */
+  factory: null;
+}
+interface Settlement {
+  id: string;
+  level: number;
+  exp: string;
+  expToLevelUp: string;
+  remainMoney: string;
+  moneyMax: string;
+  officerCharIds: string;
+  officerCharAvatar: string;
+  name: string;
+  lastTickTime: string;
+}
+interface MoneyMgr {
+  total: string;
+  count: string;
+}
+interface DomainCollection {
+  levelId: string;
+  puzzleCount: number;
+  trchestCount: number;
+  equipTrchestCount: number;
+  pieceCount: number;
+  blackboxCount: number;
+}
+interface DomainLevel {
+  levelId: string;
+  name: string;
+  puzzleCount: CountTotal;
+  trchestCount: CountTotal;
+  equipTrchestCount: CountTotal;
+  pieceCount: CountTotal;
+  blackboxCount: CountTotal;
+}
+interface Dungeon {
+  curStamina: string;
+  maxTs: string;
+  maxStamina: string;
+}
+interface BpSystem {
+  curLevel: number;
+  maxLevel: number;
+}
+interface DailyMission {
+  dailyActivation: number;
+  maxDailyActivation: number;
+}
+interface WeeklyMission {
+  score: number;
+  total: number;
+}
+interface PlayerConfig {
+  charSwitch: boolean;
+  /** Ordered list of character ids in the active squad */
+  charIds: string[];
+}
+interface QuickAccess {
+  name: string;
+  icon: string;
+  link: string;
+}
