@@ -528,7 +528,7 @@ class EndfieldService extends BaseService {
     const firstTmr = firstTimeCheckin[1];
     if (firstTmr && resources[firstTmr.awardId]) tmrRewards.push(resources[firstTmr.awardId]!);
 
-    const moment = timestampStartOfTheDay(EndfieldService.Constants.DAILY_RESET_TIMEZONE)!;
+    const moment = timestampStartOfTheDay(this.Constants.DAILY_RESET_TIMEZONE)!;
 
     return {
       isTodayChecked: attendance.hasToday,
@@ -568,7 +568,7 @@ class EndfieldService extends BaseService {
       if (reward) tmrRewards.push(reward);
     });
 
-    const moment = timestampStartOfTheDay(EndfieldService.Constants.DAILY_RESET_TIMEZONE)!;
+    const moment = timestampStartOfTheDay(this.Constants.DAILY_RESET_TIMEZONE)!;
 
     return {
       todayRewards,
@@ -587,10 +587,10 @@ class EndfieldService extends BaseService {
    */
   #computeSign(path: string, body: string, timestamp: string, signToken: string): string {
     const headerObj = {
-      platform: EndfieldService.Constants.PLATFORM,
+      platform: this.Constants.PLATFORM,
       timestamp,
       dId: '',
-      vName: EndfieldService.Constants.VNAME,
+      vName: this.Constants.VNAME,
     };
 
     const headersJson = JSON.stringify(headerObj);
