@@ -101,34 +101,33 @@ export async function EndfieldDoCheckIn(
   const container = new ContainerBuilder();
 
   // Header.
-  container.addTextDisplayComponents(EndfieldTextDisplay(`## Endfield check-in successful!`));
+  EndfieldTextDisplay(container, `## Endfield check-in successful!`);
   // Separator.
-  container.addSeparatorComponents(EndfieldSeparator());
+  EndfieldSeparator(container);
   // Today's rewards.
-  container.addTextDisplayComponents(
-    EndfieldTextDisplay(`> ## Today's Rewards (Day ${checkInInfo.currentDay}):`),
-  );
+  EndfieldTextDisplay(container, `> ## Today's Rewards (Day ${checkInInfo.currentDay}):`);
   checkedIn.todayRewards.forEach((reward) => {
-    container.addSectionComponents(EndfieldRewardSection(reward));
+    EndfieldRewardSection(container, reward);
   });
   // Separator.
-  container.addSeparatorComponents(EndfieldSeparator());
+  EndfieldSeparator(container);
   // Tomorrow's rewards.
-  container.addTextDisplayComponents(EndfieldTextDisplay("> ## Tomorrow's Rewards:"));
+  EndfieldTextDisplay(container, "> ## Tomorrow's Rewards:");
   const tmrRewards = checkedIn.tomorrowRewards;
   if (tmrRewards.length > 0) {
     tmrRewards.forEach((reward) => {
-      container.addSectionComponents(EndfieldRewardSection(reward));
+      EndfieldRewardSection(container, reward);
     });
   } else {
-    container.addTextDisplayComponents(
-      EndfieldTextDisplay('## *No rewards for tomorrow or waiting for next month refresh.*'),
+    EndfieldTextDisplay(
+      container,
+      '## *No rewards for tomorrow or waiting for next month refresh.*',
     );
   }
   // Separator.
-  container.addSeparatorComponents(EndfieldSeparator());
+  EndfieldSeparator(container);
   // Footer.
-  container.addTextDisplayComponents(EndfieldTextDisplay(nextCheckInTime));
+  EndfieldTextDisplay(container, nextCheckInTime);
 
   if (int)
     return int.SendOrEdit({

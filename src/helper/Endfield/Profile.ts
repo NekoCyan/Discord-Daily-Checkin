@@ -1,17 +1,11 @@
-import {
-  ButtonBuilder,
-  ButtonStyle,
-  ContainerBuilder,
-  MessageFlags,
-  SectionBuilder,
-  User,
-} from 'discord.js';
+import { ContainerBuilder, MessageFlags, User } from 'discord.js';
 import { ServiceError } from '../../errors/ServiceError.js';
 import EndfieldModel from '../../models/Endfield.js';
 import EndfieldService from '../../services/endfield.service.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
 import ContextMenuInteraction from '../../utilities/interaction/contextmenu.interaction.js';
 import {
+  EndfieldProfilePrivateNotice,
   EndfieldRewardSection,
   EndfieldSeparator,
   EndfieldTextDisplay,
@@ -91,61 +85,45 @@ export async function EndfieldProfile(
 
   // Header.
   const skportUserAvatar = service.skportUser?.user.basicUser.avatar;
-  const headerSection = EndfieldUserSection(userInfo, skportUserAvatar);
-  container.addSectionComponents(headerSection);
+  EndfieldUserSection(container, userInfo, skportUserAvatar);
   // Separator.
-  container.addSeparatorComponents(EndfieldSeparator());
+  EndfieldSeparator(container);
   // Today's rewards.
-  container.addTextDisplayComponents(
-    EndfieldTextDisplay(`> ## Today's Rewards (Day ${userCheckin.currentDay}):`),
-  );
+  EndfieldTextDisplay(container, `> ## Today's Rewards (Day ${userCheckin.currentDay}):`);
   userCheckin.todayRewards.forEach((reward) => {
-    container.addSectionComponents(EndfieldRewardSection(reward));
+    EndfieldRewardSection(container, reward);
   });
   // Separator.
-  container.addSeparatorComponents(EndfieldSeparator());
+  EndfieldSeparator(container);
   // Tomorrow's rewards.
-  container.addTextDisplayComponents(EndfieldTextDisplay("> ## Tomorrow's Rewards:"));
+  EndfieldTextDisplay(container, "> ## Tomorrow's Rewards:");
   const tmrRewards = userCheckin.tomorrowRewards;
   if (tmrRewards.length > 0) {
     tmrRewards.forEach((reward) => {
-      container.addSectionComponents(EndfieldRewardSection(reward));
+      EndfieldRewardSection(container, reward);
     });
   } else {
-    container.addTextDisplayComponents(
-      EndfieldTextDisplay('## *No rewards for tomorrow or waiting for next month refresh.*'),
+    EndfieldTextDisplay(
+      container,
+      '## *No rewards for tomorrow or waiting for next month refresh.*',
     );
   }
   // Separator.
-  container.addSeparatorComponents(EndfieldSeparator());
+  EndfieldSeparator(container);
   // Footer.
   const nextCheckinTS = Math.floor(userCheckin.nextDayTimestamp / 1000);
-  container.addTextDisplayComponents(
-    EndfieldTextDisplay(
-      [
-        `Today check-in status: ${userCheckin.isTodayChecked ? '✅ Checked in' : '❌ Not checked in yet'}.`,
-        `Next check-in time: <t:${nextCheckinTS}:R> (<t:${nextCheckinTS}:F>).`,
-      ].join('\n'),
-    ),
+  EndfieldTextDisplay(
+    container,
+    [
+      `Today check-in status: ${userCheckin.isTodayChecked ? '✅ Checked in' : '❌ Not checked in yet'}.`,
+      `Next check-in time: <t:${nextCheckinTS}:R> (<t:${nextCheckinTS}:F>).`,
+    ].join('\n'),
   );
 
   // If the current profile is private, add a button to toggle visibility.
   if (isSelf && !endfieldModel.isPublic) {
-    // Separator.
-    container.addSeparatorComponents(EndfieldSeparator());
-
-    container.addSectionComponents(
-      new SectionBuilder()
-        .addTextDisplayComponents(
-          EndfieldTextDisplay('-# *This profile is private. Only you can see it.*'),
-        )
-        .setButtonAccessory(
-          new ButtonBuilder()
-            .setCustomId('endfield-toggle-profile-visibility')
-            .setLabel('Change Profile Visibility')
-            .setStyle(ButtonStyle.Primary),
-        ),
-    );
+    EndfieldSeparator(container);
+    EndfieldProfilePrivateNotice(container, true);
   }
 
   return Promise.all([
