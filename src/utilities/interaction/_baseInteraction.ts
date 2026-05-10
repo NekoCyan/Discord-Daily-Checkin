@@ -5,10 +5,12 @@ import {
   ButtonBuilder,
   ButtonInteraction,
   ButtonStyle,
+  ChatInputCommandInteraction,
   CommandInteraction,
   ComponentType,
   ContextMenuCommandInteraction,
   InteractionCollector,
+  InteractionEditReplyOptions,
   InteractionReplyOptions,
   InteractionUpdateOptions,
   Message,
@@ -24,6 +26,7 @@ import { isPageFetchResult } from './_helper.js';
 class BaseInteraction<
   AnyInteraction extends
     | CommandInteraction
+    | ChatInputCommandInteraction
     | AutocompleteInteraction
     | ButtonInteraction
     | ModalSubmitInteraction
@@ -36,6 +39,13 @@ class BaseInteraction<
   constructor(client: BotClient, interaction: AnyInteraction) {
     this.client = client;
     this.interaction = interaction;
+  }
+
+  async isComponentV2(): Promise<boolean> {
+    if (this.interaction.isAutocomplete()) return false;
+
+    const reply = await this.interaction.fetchReply().catch(() => null);
+    return !!reply && reply.flags.has(MessageFlags.IsComponentsV2);
   }
 
   /**
@@ -206,9 +216,10 @@ class BaseInteraction<
    * controller revokes the previous one and deletes its message.
    */
   async PageController(
-    pages: PageEntry<unknown>[],
+    _pages: (PageEntry<unknown> | undefined)[],
     options?: PageControllerOptions,
   ): Promise<void> {
+    const pages = _pages.filter((p): p is PageEntry => p !== undefined);
     if (pages.length === 0) return;
 
     const idPrefix = options?.idPrefix ?? 'pgctrl';
@@ -315,16 +326,39 @@ class BaseInteraction<
         // ── Action / refresh button ─────────────────────────────────────────
         if (page.once && usedOnce.has(clickedIndex)) return;
 
-        unwrapFetch(await page.fetch(), page);
+        const raw = await page.fetch();
+        unwrapFetch(raw, page);
 
         if (page.once) usedOnce.add(clickedIndex);
 
+        // Re-render the current page if requested.
+        if (page.refreshRender) {
+          const currentEntry = pages[currentIndex];
+          if (currentEntry?.render) {
+            const refreshRaw = await currentEntry.fetch();
+            const refreshData = unwrapFetch(refreshRaw, currentEntry);
+            lastPagePayload = currentEntry.render(refreshData as never);
+          }
+        }
+
         const row = this.buildNavRow(pages, currentIndex, idPrefix, false, usedOnce);
-        const payload =
-          lastPagePayload !== null
-            ? this.injectNavRow(lastPagePayload, row)
-            : { components: [row] };
-        await i.update(payload as unknown as InteractionUpdateOptions);
+
+        if (isPageFetchResult(raw) && raw.meta.followUp !== undefined) {
+          // Send a separate follow-up (e.g. plain content) without touching the
+          // components-v2 page.
+          const pagePayload =
+            lastPagePayload !== null
+              ? this.injectNavRow(lastPagePayload, row)
+              : { components: [row] };
+          await i.update(pagePayload as unknown as InteractionEditReplyOptions);
+          await i.followUp(raw.meta.followUp);
+        } else {
+          const payload =
+            lastPagePayload !== null
+              ? this.injectNavRow(lastPagePayload, row)
+              : { components: [row] };
+          await i.update(payload as unknown as InteractionUpdateOptions);
+        }
       }
     });
 

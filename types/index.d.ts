@@ -127,6 +127,18 @@ export interface PageMeta {
   style?: ButtonStyle;
   once?: boolean;
   onceBehavior?: 'disable' | 'remove';
+  /**
+   * Action-button only — sends a separate follow-up message (e.g. ephemeral
+   * text) without touching the components-v2 page message.
+   *
+   * Use this instead of updating the page directly when you need a plain
+   * `content` string alongside a `MessageFlags.IsComponentsV2` page, because
+   * Discord forbids mixing `content` and components-v2 flags in the same update.
+   *
+   * The page message is updated in-place (nav row only, via `message.edit`)
+   * while the follow-up is sent as a new message to the channel.
+   */
+  followUp?: InteractionReplyOptions;
 }
 
 /**
@@ -159,12 +171,17 @@ export interface PageEntry<T = unknown> {
   style?: ButtonStyle;
   /** Action-button only — allow only one press per controller session. Default: `false`. */
   once?: boolean;
-  /** What happens after a `once` action fires: `'disable'` grays it out, `'remove'` hides it. Default: `'disable'`. */
+  /** Action-button only — What happens after a `once` action fires: `'disable'` grays it out, `'remove'` hides it. Default: `'disable'`. */
   onceBehavior?: 'disable' | 'remove';
+  /**
+   * Action-button only — after the action's `fetch()` completes, re-render the current page.
+   * Default: `false`.
+   */
+  refreshRender?: boolean;
   /**
    * Async function that fetches the data needed by this page or performs the action.
    * Return a plain value or wrap it with `pageResult(data, meta)` to also
-   * dynamically override this page's `label`, `style`, `once`, or `onceBehavior`.
+   * dynamically override this page's `label`, `style`, `once`, `onceBehavior`, or `refreshRender`.
    */
   fetch: () => Promise<T | PageFetchResult<T>>;
   /** Transforms the fetched data into a reply payload. Omit to make this an action button. */
