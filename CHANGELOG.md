@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.0.3] - 2026-05-10
+
+### Features
+
+- **Real-time Endfield API** — Added `getRealTimeData()` and `getRealTimeDataDetail()` methods to `EndfieldService`, along with new TypeScript interfaces for all real-time response shapes and shared types (`CurrentTotal`, `KeyValue`, `CountTotal`).
+- **PageController for interactive paged messages** — Implemented a `PageController` system in `BaseInteraction` supporting navigation rows, per-user controller lifecycle, caching, single-page shortcuts, and action buttons with `once`/`onceBehavior` handling. Includes typed helpers (`definePage`, `pageResult`, `isPageFetchResult`) and new types (`PageEntry`, `PageMeta`, `PageFetchResult`, `PageControllerOptions`).
+- **`followUp` and `refreshRender` support in PageController** — Pages can now return a `followUp` meta to send a separate follow-up message alongside the navigation update (required for components-v2 pages). Added `refreshRender` option to re-render the current page after an action.
+- **Increased PageController default timeout to 5 minutes** — Default collector lifetime raised from 3 min (`180_000 ms`) to 5 min (`300_000 ms`) to reduce premature timeouts.
+- **`EndfieldService` constructor now requires options** — `accountToken` and `cred` are now assigned directly at construction. Added `origin` and `referer` default headers pointing to `https://game.skport.com`.
+- **Instance-level `Constants` in `EndfieldService`** — Replaced `EndfieldService.Constants` (static reference) with `this.Constants` for timestamp calculations and header construction, enabling correct instance-level behavior.
+
+### Refactors
+
+- **Generic UI helper** — Introduced `src/helper/_helper.ts` providing reusable `TextDisplay` and `Separator` utilities shared across features.
+- **Endfield UI helpers and paged profile** — Replaced `EndfieldUserSection` with `EndfieldSkportUserSection`, added ingame sections (`EndfieldIngameUserSection`, `EndfieldIngameBaseSection`, `EndfieldIngameRealTimeResourcesSection`). `Profile` is now a paged UI with a real-time info page and a check-in page. `SetVisibility` now accepts `ContextMenuInteraction` and handles components-v2 follow-ups.
+- **`ContainerBuilder` in Endfield helpers** — Endfield helper functions now accept a `ContainerBuilder` and add components directly to it, removing builder returns and simplifying call sites in `DoCheckIn` and `Profile`. Added `EndfieldProfilePrivateNotice` to encapsulate the private-profile section and toggle button.
+
+### Fixes
+
+- **CI/CD: mismatched env file for mongo service** — `docker-compose.mongo.yml` was referencing `.env` instead of `.env.production`, causing compose validation to fail in CI.
+
+---
+
 ## [1.0.2] - 2026-05-09
 
 ### Features
