@@ -3,7 +3,8 @@ import BotClient from '../../BotClient.js';
 import EndfieldModel from '../../models/Endfield.js';
 import EndfieldService from '../../services/endfield.service.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
-import { EndfieldRewardSection, EndfieldSeparator, EndfieldTextDisplay } from './_helper.js';
+import { Separator, TextDisplay } from '../_helper.js';
+import { EndfieldRewardSection } from './_helper.js';
 
 /**
  * Handle the check-in process for Endfield, including token validation and database updates.
@@ -101,33 +102,30 @@ export async function EndfieldDoCheckIn(
   const container = new ContainerBuilder();
 
   // Header.
-  EndfieldTextDisplay(container, `## Endfield check-in successful!`);
+  TextDisplay(container, `## Endfield check-in successful!`);
   // Separator.
-  EndfieldSeparator(container);
+  Separator(container);
   // Today's rewards.
-  EndfieldTextDisplay(container, `> ## Today's Rewards (Day ${checkInInfo.currentDay}):`);
+  TextDisplay(container, `> ## Today's Rewards (Day ${checkInInfo.currentDay}):`);
   checkedIn.todayRewards.forEach((reward) => {
     EndfieldRewardSection(container, reward);
   });
   // Separator.
-  EndfieldSeparator(container);
+  Separator(container);
   // Tomorrow's rewards.
-  EndfieldTextDisplay(container, "> ## Tomorrow's Rewards:");
+  TextDisplay(container, "> ## Tomorrow's Rewards:");
   const tmrRewards = checkedIn.tomorrowRewards;
   if (tmrRewards.length > 0) {
     tmrRewards.forEach((reward) => {
       EndfieldRewardSection(container, reward);
     });
   } else {
-    EndfieldTextDisplay(
-      container,
-      '## *No rewards for tomorrow or waiting for next month refresh.*',
-    );
+    TextDisplay(container, '## *No rewards for tomorrow or waiting for next month refresh.*');
   }
   // Separator.
-  EndfieldSeparator(container);
+  Separator(container);
   // Footer.
-  EndfieldTextDisplay(container, nextCheckInTime);
+  TextDisplay(container, nextCheckInTime);
 
   if (int)
     return int.SendOrEdit({

@@ -1,16 +1,20 @@
-import { ContainerBuilder, MessageFlags, User } from 'discord.js';
+import { ButtonStyle, ContainerBuilder, MessageFlags, User } from 'discord.js';
 import { ServiceError } from '../../errors/ServiceError.js';
 import EndfieldModel from '../../models/Endfield.js';
 import EndfieldService from '../../services/endfield.service.js';
+import { definePage } from '../../utilities/interaction/_helper.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
 import ContextMenuInteraction from '../../utilities/interaction/contextmenu.interaction.js';
+import { Separator, TextDisplay } from '../_helper.js';
 import {
+  EndfieldIngameBaseSection,
+  EndfieldIngameRealTimeResourcesSection,
+  EndfieldIngameUserSection,
   EndfieldProfilePrivateNotice,
   EndfieldRewardSection,
-  EndfieldSeparator,
-  EndfieldTextDisplay,
-  EndfieldUserSection,
+  EndfieldSkportUserSection,
 } from './_helper.js';
+import { EndfieldSetVisibility } from './SetVisibility.js';
 
 export async function EndfieldProfile(
   int: CommandInteraction | ContextMenuInteraction,
@@ -75,62 +79,123 @@ export async function EndfieldProfile(
     );
   }
 
-  const [userInfo, userCheckin] = await Promise.all([
-    service.getEndfieldUserInfo(),
+  const [userSkport, userCheckin, userRealtimeDetail] = await Promise.all([
+    service.getSkportUser(),
     service.getCheckInInfo(),
+    service.getRealTimeDataDetail(),
   ]);
 
-  // Render section.
-  const container = new ContainerBuilder();
+  // Skip await for database update.
+  endfieldModel.updateOnChange(service.toObject());
 
-  // Header.
-  const skportUserAvatar = service.skportUser?.user.basicUser.avatar;
-  EndfieldUserSection(container, userInfo, skportUserAvatar);
-  // Separator.
-  EndfieldSeparator(container);
-  // Today's rewards.
-  EndfieldTextDisplay(container, `> ## Today's Rewards (Day ${userCheckin.currentDay}):`);
-  userCheckin.todayRewards.forEach((reward) => {
-    EndfieldRewardSection(container, reward);
-  });
-  // Separator.
-  EndfieldSeparator(container);
-  // Tomorrow's rewards.
-  EndfieldTextDisplay(container, "> ## Tomorrow's Rewards:");
-  const tmrRewards = userCheckin.tomorrowRewards;
-  if (tmrRewards.length > 0) {
-    tmrRewards.forEach((reward) => {
-      EndfieldRewardSection(container, reward);
-    });
-  } else {
-    EndfieldTextDisplay(
-      container,
-      '## *No rewards for tomorrow or waiting for next month refresh.*',
-    );
-  }
-  // Separator.
-  EndfieldSeparator(container);
-  // Footer.
-  const nextCheckinTS = Math.floor(userCheckin.nextDayTimestamp / 1000);
-  EndfieldTextDisplay(
-    container,
-    [
-      `Today check-in status: ${userCheckin.isTodayChecked ? '✅ Checked in' : '❌ Not checked in yet'}.`,
-      `Next check-in time: <t:${nextCheckinTS}:R> (<t:${nextCheckinTS}:F>).`,
-    ].join('\n'),
-  );
+  const isProfilePrivate = isSelf && !endfieldModel.isPublic;
 
-  // If the current profile is private, add a button to toggle visibility.
-  if (isSelf && !endfieldModel.isPublic) {
-    EndfieldSeparator(container);
-    EndfieldProfilePrivateNotice(container, true);
-  }
+  await int.PageController([
+    definePage({
+      label: 'Real-Time Info',
+      style: ButtonStyle.Primary,
+      fetch: async () => null,
+      render: () => {
+        const container = new ContainerBuilder();
 
-  return Promise.all([
-    int.SendOrEdit({
-      components: [container],
-      flags: MessageFlags.IsComponentsV2,
+        // Header.
+        EndfieldIngameUserSection(container, userRealtimeDetail);
+        // Separator.
+        Separator(container);
+        // In-game base user info section.
+        TextDisplay(container, '> ### Base Info:');
+        EndfieldIngameBaseSection(container, userRealtimeDetail);
+        // Separator.
+        Separator(container);
+        // In-game statistics section.
+        TextDisplay(container, '> ### Real-Time Resources:');
+        EndfieldIngameRealTimeResourcesSection(container, userRealtimeDetail);
+
+        // If the current profile is private, notice the user.
+        if (isSelf && !endfieldModel.isPublic) {
+          Separator(container);
+          EndfieldProfilePrivateNotice(container);
+        } else {
+          Separator(container);
+        }
+
+        return {
+          components: [container],
+          flags: MessageFlags.IsComponentsV2,
+        };
+      },
     }),
-    endfieldModel.updateOnChange(service.toObject()),
+    definePage({
+      label: 'Check-In Info',
+      style: ButtonStyle.Primary,
+      fetch: async () => null,
+      render: () => {
+        const container = new ContainerBuilder();
+
+        // Header.
+        EndfieldSkportUserSection(container, userSkport);
+        // Separator.
+        Separator(container);
+        // Today's rewards.
+        TextDisplay(container, `> ## Today's Rewards (Day ${userCheckin.currentDay}):`);
+        userCheckin.todayRewards.forEach((reward) => {
+          EndfieldRewardSection(container, reward);
+        });
+        // Separator.
+        Separator(container);
+        // Tomorrow's rewards.
+        TextDisplay(container, "> ## Tomorrow's Rewards:");
+        const tmrRewards = userCheckin.tomorrowRewards;
+        if (tmrRewards.length > 0) {
+          tmrRewards.forEach((reward) => {
+            EndfieldRewardSection(container, reward);
+          });
+        } else {
+          TextDisplay(container, '## *No rewards for tomorrow or waiting for next month refresh.*');
+        }
+        // Separator.
+        Separator(container);
+        // Footer.
+        const nextCheckinTS = Math.floor(userCheckin.nextDayTimestamp / 1000);
+        TextDisplay(
+          container,
+          [
+            `Today check-in status: ${userCheckin.isTodayChecked ? '✅ Checked in' : '❌ Not checked in yet'}.`,
+            `Next check-in time: <t:${nextCheckinTS}:R> (<t:${nextCheckinTS}:F>).`,
+          ].join('\n'),
+        );
+
+        // If the current profile is private, notice the user.
+        if (isSelf && !endfieldModel.isPublic) {
+          Separator(container);
+          EndfieldProfilePrivateNotice(container);
+        } else {
+          Separator(container);
+        }
+
+        return {
+          components: [container],
+          flags: MessageFlags.IsComponentsV2,
+        };
+      },
+    }),
+    isProfilePrivate
+      ? definePage({
+          label: 'Public your Profile',
+          style: ButtonStyle.Success,
+          once: true,
+          onceBehavior: 'remove',
+          refreshRender: true,
+          fetch: async () => {
+            await EndfieldSetVisibility(int, 'public');
+
+            // Virtual the public state to delete the notice.
+            endfieldModel.isPublic = true;
+            return null;
+          },
+        })
+      : undefined,
   ]);
+
+  return;
 }
