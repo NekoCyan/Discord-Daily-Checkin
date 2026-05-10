@@ -97,6 +97,7 @@ export default {
   },
   autoComplete: async function (int) {
     const isPublic = (await EndfieldModel.getOrCreate(int.interaction.user.id)).isPublic;
+
     const choices = [
       {
         name: 'Public' + (isPublic ? ' [Current state]' : ''),
@@ -107,7 +108,10 @@ export default {
         value: 'private',
       },
     ];
+    // Reverse the order of choices if current state is public (put the current state at the bottom of list).
+    if (isPublic) choices.reverse();
 
     await int.interaction.respond(choices);
+    return;
   },
 } as SlashCommandHandler;
