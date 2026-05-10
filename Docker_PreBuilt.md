@@ -24,6 +24,19 @@ The latest image is published to the GitHub Container Registry on every release.
 
 ---
 
+## Setup Environment File
+
+Download the example env file and copy it to `.env.production`, then fill in your values:
+
+```bash
+curl -O https://raw.githubusercontent.com/NekoCyan/Discord-Daily-Checkin/main/.env.example
+cp .env.example .env.production
+```
+
+Open `.env.production` in your editor and fill in at minimum `DISCORD_TOKEN` and `MONGODB_URI`.
+
+---
+
 ## Option A — You already have a MongoDB URI
 
 Set `MONGODB_URI` in `.env.production` to your remote connection string, then download the compose file and run:
@@ -33,7 +46,7 @@ Set `MONGODB_URI` in `.env.production` to your remote connection string, then do
 curl -O https://raw.githubusercontent.com/NekoCyan/Discord-Daily-Checkin/main/docker-compose.yml
 
 # Start the bot
-docker compose up -d
+docker compose --env-file .env.production up -d
 ```
 
 ---
@@ -48,7 +61,7 @@ curl -O https://raw.githubusercontent.com/NekoCyan/Discord-Daily-Checkin/main/do
 curl -O https://raw.githubusercontent.com/NekoCyan/Discord-Daily-Checkin/main/docker-compose.mongo.yml
 
 # Start the bot and MongoDB
-docker compose -f docker-compose.yml -f docker-compose.mongo.yml up -d
+docker compose --env-file .env.production -f docker-compose.yml -f docker-compose.mongo.yml up -d
 ```
 
 MongoDB data will be persisted to `./data/mongo` in whatever directory you run the command from.
