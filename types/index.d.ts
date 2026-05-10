@@ -191,7 +191,7 @@ export interface PageEntry<T = unknown> {
 export interface PageControllerOptions {
   /** Index of the page shown on first render. Falls back to the first render-capable entry. Default: `0`. */
   initialPage?: number;
-  /** Collector lifetime in milliseconds. Default: `180_000` (3 min). */
+  /** Collector lifetime in milliseconds. Default: `300_000` (5 min). */
   timeout?: number;
   /** Prefix for button custom IDs, prevents collisions when multiple controllers are active. Default: `'pgctrl'`. */
   idPrefix?: string;

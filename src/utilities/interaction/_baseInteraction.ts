@@ -223,7 +223,7 @@ class BaseInteraction<
     if (pages.length === 0) return;
 
     const idPrefix = options?.idPrefix ?? 'pgctrl';
-    const timeout = options?.timeout ?? 180_000;
+    const timeout = options?.timeout ?? 300_000;
 
     // Single-page shortcut — no buttons needed.
     if (pages.length === 1) {
