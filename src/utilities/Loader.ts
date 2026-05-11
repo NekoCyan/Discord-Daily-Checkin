@@ -30,6 +30,8 @@ export default function Loader() {
     process.env.LOG_LEVEL || (process.env.NODE_ENV === 'development' ? 'trace' : 'info'),
   );
 
+  global.isProduction = process.env.NODE_ENV === 'production';
+
   // Listen for keypress events to allow graceful shutdown on Ctrl+C
   // This will helpful for cmd users on windows 10 I guess :>
   emitKeypressEvents(process.stdin);

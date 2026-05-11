@@ -23,6 +23,7 @@ export declare global {
   }
 
   var logger: ReturnType<typeof _logger>;
+  var isProduction: boolean;
 }
 
 type Defined<T> = {

@@ -15,7 +15,7 @@ import { resolveDynamicImportPath } from './utilities/Utils.js';
 const handlerPath = path.resolve(entryPath, './handler');
 const allHandlers = ['events', 'commandRegistration', 'buttons'];
 
-export default class BotClient extends Client<true> {
+class BotClient extends Client<true> {
   /**
    * Indicates whether the bot is logged in or not.
    */
@@ -151,3 +151,5 @@ export default class BotClient extends Client<true> {
     return name;
   }
 }
+
+export default BotClient;
