@@ -10,6 +10,10 @@ abstract class BaseService {
   protected error<T extends object = never>(message: string, data?: T): ServiceError<T> {
     return new ServiceError<T>(this.constructor.name, message, data);
   }
+
+  static error<T extends object = never>(message: string, data?: T): ServiceError<T> {
+    return new ServiceError<T>(this.name, message, data);
+  }
 }
 
 export default BaseService;
