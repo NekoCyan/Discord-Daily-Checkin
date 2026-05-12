@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import BotClient from '../BotClient.js';
-import { EndfieldRunBatchCheckIn } from '../helper/Endfield/RunBatchCheckIn.js';
+import { EndfieldRunBatchCheckIn } from '../helper/Endfield/index.js';
 import EndfieldService from '../services/endfield.service.js';
 
 let isRunning = false;
