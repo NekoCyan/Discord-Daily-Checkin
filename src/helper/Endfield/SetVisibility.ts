@@ -1,4 +1,3 @@
-import { MessageFlags } from 'discord.js';
 import EndfieldModel from '../../models/Endfield.js';
 import ButtonInteraction from '../../utilities/interaction/button.interaction.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
@@ -36,7 +35,7 @@ export async function EndfieldSetVisibility(
   // If the interaction is component v2, should use followUp to avoid "Interaction failed"
   // message, and make the response ephemeral. Otherwise, use SendOrEdit as usual.
   if (await int.isComponentV2()) {
-    return int.interaction.followUp({ content: msg, flags: MessageFlags.Ephemeral });
+    return int.followUp(msg, true);
   } else {
     return int.SendOrEdit(msg);
   }

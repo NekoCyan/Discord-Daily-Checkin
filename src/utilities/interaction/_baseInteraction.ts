@@ -125,6 +125,53 @@ class BaseInteraction<
   }
 
   /**
+   * A method to send a follow-up message to the interaction. This is useful for sending additional messages after the initial reply, especially when the initial reply is deferred or when you want to send multiple messages in response to an interaction.
+   * @param msg The content to send as a follow-up, or an InteractionReplyOptions object for additional options.
+   * @param options If msg is a string, this can be either a boolean indicating whether the reply should be ephemeral or an InteractionReplyOptions object for additional options. If msg is an InteractionReplyOptions object, this parameter can be used to specify whether the reply should be ephemeral.
+   * @param ephemeral Whether the reply should be ephemeral. This parameter is only used if msg is a string or if options is an InteractionReplyOptions object.
+   * @returns A promise that resolves to the sent or edited message, or void if the interaction is not repliable.
+   */
+  async followUp(
+    msg: string | InteractionReplyOptions,
+    options?: boolean | InteractionReplyOptions,
+    ephemeral: boolean = false,
+  ) {
+    const int = this.interaction;
+
+    if (!int.isRepliable()) return;
+
+    const ephemeralFlag = (bool: boolean) => (bool ? MessageFlags.Ephemeral : undefined);
+
+    const mergeFlags = (...flags: (MessageFlags | number | undefined)[]) => {
+      const result = flags
+        .filter((f): f is number => f !== undefined)
+        .reduce((acc, f) => acc | f, 0);
+      return result || undefined;
+    };
+
+    if (typeof msg === 'object') {
+      const { flags, ...rest } = msg;
+      const resolvedEphemeral = typeof options === 'boolean' ? options : ephemeral;
+      return int.followUp({
+        ...rest,
+        flags: mergeFlags(
+          typeof flags === 'number' ? flags : undefined,
+          ephemeralFlag(resolvedEphemeral),
+        ),
+      });
+    } else if (typeof options === 'boolean')
+      return int.followUp({ content: msg, flags: ephemeralFlag(options) });
+    else if (typeof options === 'object') {
+      const { flags, ...rest } = options;
+      return int.followUp({
+        ...rest,
+        content: msg,
+        flags: mergeFlags(typeof flags === 'number' ? flags : undefined, ephemeralFlag(ephemeral)),
+      });
+    } else return int.followUp({ content: msg, flags: ephemeralFlag(ephemeral) });
+  }
+
+  /**
    * A helper method to prevent commands on the bot if targetted, it will reply with an error
    * message if the target user is a bot.
    * @param targetUser The user to check.
