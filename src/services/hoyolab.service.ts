@@ -204,7 +204,7 @@ class HoyolabService extends BaseService {
    * Validates the account token by making a request to fetch the game record card. If the token is valid, it will return true. If the token is invalid, it will return false. If there is any other error during the request, it will throw an error.
    * @returns A promise that resolves to true if the account token is valid, false if the account token is invalid, or throws an error if there is an unexpected error during the validation process.
    */
-  async isValidAccount() {
+  async isValidCookie() {
     const res = await this.getGameRecordCard(true).catch((e: ServiceError | Error) => e);
 
     /**
