@@ -21,5 +21,6 @@ export default {
     await interaction.SendOrEdit('Pinging...', true);
     const latency = performance.now() - now;
     await interaction.SendOrEdit(`Pong! Latency: ${latency.toFixed(2)}ms`);
+    return;
   },
 } as SlashCommandHandler;

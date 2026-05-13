@@ -112,3 +112,31 @@ export function truncateMiddle(
   if (str.length <= keepStart + keepEnd) return str;
   return str.slice(0, keepStart) + placeholder + str.slice(str.length - keepEnd);
 }
+
+/**
+ * Parses a cookie string into an object where each key is a cookie name and each value is the corresponding cookie value.
+ * @param cookie - The cookie string to parse, typically in the format "key1=value1; key2=value2; ...".
+ * @returns An object representing the parsed cookies, where each key is a cookie name and each value is the corresponding cookie value. If the input string is not properly formatted, it may return an empty object or partial results based on the valid segments of the input.
+ */
+export function cookieParser(cookie: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  const pairs = cookie.split(';');
+  for (const pair of pairs) {
+    const [key, ...rest] = pair.trim().split('=');
+    if (key && rest.length > 0) {
+      result[key] = rest.join('=');
+    }
+  }
+  return result;
+}
+
+/**
+ * Converts an object representing cookies into a string format suitable for HTTP headers, where each key-value pair is joined by an equals sign and pairs are separated by semicolons.
+ * @param cookieObj - An object where each key is a cookie name and each value is the corresponding cookie value.
+ * @returns A string representing the cookies in the format "key1=value1; key2=value2; ...".
+ */
+export function cookieStringify(cookieObj: Record<string, string>): string {
+  return Object.entries(cookieObj)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('; ');
+}

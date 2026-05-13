@@ -104,7 +104,7 @@ Controls whether your Endfield profile is visible to other users via `/endfield 
 
 | Option       | Type                  | Required | Description                                                                 |
 | ------------ | --------------------- | -------- | --------------------------------------------------------------------------- |
-| `visibility` | String (autocomplete) | Yes      | `Public` or `Private`. The autocomplete list highlights your current state. |
+| `visibility` | String (autocomplete) | Yes      | `public` or `private`. The autocomplete list highlights your current state. |
 
 </details>
 
