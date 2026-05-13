@@ -1,4 +1,5 @@
 import type {
+  AnySelectMenuInteraction,
   ButtonStyle,
   ClientOptions,
   ContextMenuCommandBuilder,
@@ -10,6 +11,7 @@ import AutoCompleteInteraction from '../src/utilities/interaction/autocomplete.i
 import ButtonInteraction from '../src/utilities/interaction/button.interaction.ts';
 import CommandInteraction from '../src/utilities/interaction/command.interaction.ts';
 import ContextMenuInteraction from '../src/utilities/interaction/contextmenu.interaction.ts';
+import SelectMenuInteraction from '../src/utilities/interaction/selectmenu.interaction.ts';
 import _logger from '../src/utilities/logger.ts';
 
 export declare global {
@@ -86,6 +88,20 @@ export interface ContextMenuHandler {
    */
   metadata: ContextMenuCommandBuilder;
   run: (interaction: ContextMenuInteraction) => Promise<void>;
+}
+
+export interface SelectMenuHandler<T extends AnySelectMenuInteraction> {
+  /**
+   * indicates whether this Select Menu is enabled or not
+   */
+  status: boolean;
+  /**
+   * id of the select menu, Discord would treat this as the customId of the select menu.
+   * This should be unique among all select menus.
+   * Use this id to identify which select menu is interacted with in the interaction handler.
+   */
+  id: string;
+  run(interaction: SelectMenuInteraction<T>): Promise<void>;
 }
 
 export interface BatchCheckInOptions {

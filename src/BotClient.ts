@@ -1,4 +1,10 @@
-import { APIApplicationCommand, Client, Collection, Options } from 'discord.js';
+import {
+  AnySelectMenuInteraction,
+  APIApplicationCommand,
+  Client,
+  Collection,
+  Options,
+} from 'discord.js';
 import path from 'node:path';
 import {
   BatchCheckInOptions,
@@ -6,6 +12,7 @@ import {
   ButtonHandler,
   ContextMenuHandler,
   QualifiedBatchCheckInOptions,
+  SelectMenuHandler,
   SlashCommandHandler,
 } from '../types/index.js';
 import { entryPath } from './entryPath.js';
@@ -13,7 +20,7 @@ import { BatchDefaultOptions } from './utilities/Constants.js';
 import { resolveDynamicImportPath } from './utilities/Utils.js';
 
 const handlerPath = path.resolve(entryPath, './handler');
-const allHandlers = ['events', 'commandRegistration', 'buttons'];
+const allHandlers = ['events', 'commandRegistration', 'buttons', 'selectMenus'];
 
 class BotClient extends Client<true> {
   /**
@@ -27,6 +34,7 @@ class BotClient extends Client<true> {
   isFullyReady: boolean = false;
 
   buttons = new Collection<string, ButtonHandler>();
+  selectMenus = new Collection<string, SelectMenuHandler<AnySelectMenuInteraction>>();
   slashCommands = new Collection<string, SlashCommandHandler>();
   slashCommandsRequested = new Collection<string, APIApplicationCommand>();
   contextMenus = new Collection<string, ContextMenuHandler>();

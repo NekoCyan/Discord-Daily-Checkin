@@ -21,7 +21,7 @@ export default async function contextMenus(
 
   // Scan all files within the contextMenus directory and its subdirectories,
   // and load them as context menu handlers if they are valid.
-  const files = scanFiles(contextMenusPathDir, 2) // 2 is enough for User/Message folder -> files.
+  const files = scanFiles(contextMenusPathDir, 2) // 2 is enough for InteractionTypeFolder -> files.
     .filter((x) => x.endsWith('.js') || x.endsWith('.ts')); // Only consider .js and .ts files as potential context menu handlers.
 
   for (const file of files) {

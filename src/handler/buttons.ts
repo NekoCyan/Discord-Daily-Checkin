@@ -17,7 +17,7 @@ export default async function (client: BotClient): Promise<void> {
 
   // Scan all files within the buttons directory and its subdirectories,
   // and load them as button handlers if they are valid.
-  const files = scanFiles(buttonsPathDir, 2) // 2 is enough for folder -> files.
+  const files = scanFiles(buttonsPathDir, 2) // 2 is enough for InteractionTypeFolder -> files.
     .filter((x) => x.endsWith('.js') || x.endsWith('.ts')); // Only consider .js and .ts files as potential button handlers.
 
   for (const file of files) {
