@@ -63,6 +63,11 @@ export interface IHoyolabInstanceMethods {
    */
   markLastDailyAsToday: (save?: boolean) => Promise<void>;
   resetOnUnauthorized: () => Promise<void>;
+  /**
+   * Check if the user has set up their Hoyolab account cookie by verifying the presence of valid `ltoken_v2` and `ltuid_v2` values.
+   * @returns A boolean indicating whether the user has set up their Hoyolab account cookie (true if both `ltoken_v2` and `ltuid_v2` are present, false otherwise).
+   */
+  isAccountSetted: () => boolean;
 }
 export interface IHoyolabStaticsMethods {
   /**

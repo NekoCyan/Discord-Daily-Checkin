@@ -90,6 +90,9 @@ HoyolabSchema.methods = {
       gameIdsToDailyCheck: [],
     });
   },
+  isAccountSetted() {
+    return Boolean(this.ltoken_v2 && this.ltuid_v2);
+  },
 };
 
 // statics.
