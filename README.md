@@ -1,10 +1,10 @@
 # Discord Daily Check-in
 
-![GitHub License](https://img.shields.io/github/license/NekoCyan/Discord-Daily-Checkin)
-![Type, Format & Lint Check](https://img.shields.io/github/actions/workflow/status/NekoCyan/Discord-Daily-Checkin/checks.yml?label=checks&logo=github)
+[![GitHub License](https://img.shields.io/github/license/NekoCyan/Discord-Daily-Checkin)](https://github.com/NekoCyan/Discord-Daily-Checkin/blob/main/LICENSE)
+[![Type, Format & Lint Check](https://img.shields.io/github/actions/workflow/status/NekoCyan/Discord-Daily-Checkin/checks.yml?label=checks&logo=github)](https://github.com/NekoCyan/Discord-Daily-Checkin/actions/workflows/checks.yml)
 [![GitHub Release](https://img.shields.io/github/v/release/NekoCyan/Discord-Daily-Checkin?label=release)](https://github.com/NekoCyan/Discord-Daily-Checkin/releases/latest)
 [![Docker Image Version](https://img.shields.io/github/v/release/NekoCyan/Discord-Daily-Checkin?label=docker&logo=docker&color=2496ED)](https://github.com/NekoCyan/Discord-Daily-Checkin/pkgs/container/discord-daily-checkin)
-![GitHub last commit](https://img.shields.io/github/last-commit/NekoCyan/Discord-Daily-Checkin)
+[![GitHub last commit](https://img.shields.io/github/last-commit/NekoCyan/Discord-Daily-Checkin)](https://github.com/NekoCyan/Discord-Daily-Checkin/commits/main)
 
 A Discord bot that automatically performs daily check-ins and monitors in-game real-time resources for **Arknights: Endfield** on your behalf.
 
