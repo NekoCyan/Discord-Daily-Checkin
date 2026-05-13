@@ -8,7 +8,8 @@ export interface HoyolabData {
    */
   ltoken_v2: string;
   /**
-   * This uid is used to identify the user in HoYoLAB API, it is required to do request to HoYoLAB API by using it as cookie.
+   * This uid is used to identify the user in HoYoLAB API, it is required
+   * to do request to HoYoLAB API by using it as cookie.
    */
   ltuid_v2: string;
   /**
@@ -17,6 +18,13 @@ export interface HoyolabData {
    * they view the profile of the user.
    */
   isPublic: boolean;
+  /**
+   * The user's preferred language for Hoyolab-related interactions and content.
+   * This field can be used to tailor responses, notifications, or content
+   * formatting to the user's language preference when they interact with Hoyolab
+   * features in the Discord bot.
+   */
+  lang: string;
   /**
    * An array of game IDs for which the user wants to perform the daily check-in.
    * This field is used to track which games the user has checked in for on a

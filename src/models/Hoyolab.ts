@@ -22,6 +22,7 @@ const HoyolabSchema = new mongoose.Schema<
     ltoken_v2: { type: String, default: '' },
     ltuid_v2: { type: String, default: '' },
     isPublic: { type: Boolean, default: false },
+    lang: { type: String, default: 'en-us' },
     gameIdsToDailyCheck: { type: [Number], default: [] },
     lastDailyChecked: { type: String, default: '', index: true },
   },
