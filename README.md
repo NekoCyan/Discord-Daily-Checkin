@@ -1,8 +1,23 @@
 # Discord Daily Check-in
 
-A Discord bot that automatically performs daily check-ins for **Arknights: Endfield** on your behalf.
+![GitHub License](https://img.shields.io/github/license/NekoCyan/Discord-Daily-Checkin)
+![Type, Format & Lint Check](https://img.shields.io/github/actions/workflow/status/NekoCyan/Discord-Daily-Checkin/checks.yml?label=checks&logo=github)
+[![GitHub Release](https://img.shields.io/github/v/release/NekoCyan/Discord-Daily-Checkin?label=release)](https://github.com/NekoCyan/Discord-Daily-Checkin/releases/latest)
+[![Docker Image Version](https://img.shields.io/github/v/release/NekoCyan/Discord-Daily-Checkin?label=docker&logo=docker&color=2496ED)](https://github.com/NekoCyan/Discord-Daily-Checkin/pkgs/container/discord-daily-checkin)
+![GitHub last commit](https://img.shields.io/github/last-commit/NekoCyan/Discord-Daily-Checkin)
+
+A Discord bot that automatically performs daily check-ins and monitors in-game real-time resources for **Arknights: Endfield** on your behalf.
 
 - Runs every day at **00:00 AM** (with a backup at **12:00 PM**) using the `Asia/Hong_Kong` timezone.
+
+### Using the Hosted Bot
+
+Don't want to self-host? You can authorize **NekoNyan** — the publicly hosted instance of this bot — directly to your account (**[Click here to authorize NekoNyan](https://discord.com/oauth2/authorize?client_id=1040480707987914812)**).
+
+Once authorized, check out the [Commands Reference](./COMMANDS.md) to see all available commands and how to use them.
+
+> [!WARNING]
+> NekoNyan runs on **1 CPU / 1 GB RAM**. Command responses may occasionally be slow or delayed, especially during peak hours. If you need more reliable performance, consider [self-hosting](#) the bot instead.
 
 ---
 
