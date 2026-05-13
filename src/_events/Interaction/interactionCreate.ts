@@ -4,6 +4,7 @@ import AutoCompleteInteraction from '../../utilities/interaction/autocomplete.in
 import ButtonInteraction from '../../utilities/interaction/button.interaction.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
 import ContextMenuInteraction from '../../utilities/interaction/contextmenu.interaction.js';
+import SelectMenuInteraction from '../../utilities/interaction/selectmenu.interaction.js';
 
 const somethingWentWrongMsg = `Something went wrong while executing the interaction. Please try again later or contact bot administrator for more information.`;
 
@@ -86,7 +87,21 @@ export default {
         return;
       }
     } else if (interaction.isAnySelectMenu()) {
-      // For now, we don't have any select menu interactions, so just silent it.
+      const selectMenu = client.selectMenus.get(interaction.customId);
+      if (!selectMenu) return;
+
+      const selectMenuInteraction = new SelectMenuInteraction(client, interaction);
+
+      try {
+        await selectMenu.run(selectMenuInteraction);
+      } catch (err) {
+        logger.error(
+          { err, customId: interaction.customId },
+          `Error executing select menu with custom ID ${interaction.customId}`,
+        );
+        await selectMenuInteraction.SendOrEdit(somethingWentWrongMsg, true);
+        return;
+      }
       return;
     } else {
       logger.warn(
