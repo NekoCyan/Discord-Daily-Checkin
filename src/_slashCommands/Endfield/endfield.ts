@@ -44,13 +44,16 @@ export default {
         .addStringOption((opt) =>
           opt
             .setName('token')
-            .setDescription(
-              'The account token you got (type "reset" to delete token from your Discord account).',
-            )
+            .setDescription("The account token you've got.")
             .setMinLength(0)
             .setMaxLength(100)
             .setRequired(true),
         ),
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('delete-account-token')
+        .setDescription('Delete/Remove account token from your Discord account.'),
     )
     .addSubcommand((sub) =>
       sub
@@ -82,8 +85,11 @@ export default {
       }
       case 'set-account-token': {
         const token = int.interaction.options.getString('token', true);
-        if (token.toLowerCase() === 'reset') await EndfieldResetAccountToken(int);
-        else await EndfieldSetAccountToken(int, token);
+        await EndfieldSetAccountToken(int, token);
+        break;
+      }
+      case 'delete-account-token': {
+        await EndfieldResetAccountToken(int);
         break;
       }
       case 'set-visibility': {

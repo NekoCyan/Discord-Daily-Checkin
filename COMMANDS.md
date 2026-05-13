@@ -72,13 +72,24 @@ Triggers a manual daily check-in for your Endfield account immediately.
 
 **Description:** Set the account token for Endfield (Automatically daily once after successful set).
 
-Links your Endfield account to your Discord account using the account token. Type `reset` as the token value to remove the token from your Discord account.
+Links your Endfield account to your Discord account using the account token.
 
 _Note: You can follow [Retrieving Your Endfield Account Token](./README.md/#retrieving-your-endfield-account-token) guide to obtain the account token to set._
 
-| Option  | Type                 | Required | Description                                                                                 |
-| ------- | -------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| `token` | String (0–100 chars) | Yes      | The account token you obtained. Type `reset` to delete the token from your Discord account. |
+| Option  | Type                 | Required | Description                   |
+| ------- | -------------------- | -------- | ----------------------------- |
+| `token` | String (0–100 chars) | Yes      | The account token you've got. |
+
+</details>
+
+---
+
+<details>
+<summary><h5><code>/endfield delete-account-token</code></h5></summary>
+
+**Description:** Delete/Remove account token from your Discord account.
+
+Removes your linked Endfield account token from your Discord account.
 
 </details>
 
