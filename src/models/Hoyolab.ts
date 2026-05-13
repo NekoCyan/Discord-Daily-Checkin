@@ -93,6 +93,24 @@ HoyolabSchema.methods = {
   isAccountSetted() {
     return Boolean(this.ltoken_v2 && this.ltuid_v2);
   },
+  async setLanguage(lang: string, save = true) {
+    if (this.lang === lang) return;
+
+    await this.updateOnChange({ lang }, { save });
+    return;
+  },
+  async setGameIdsToDailyCheck(gameIds: number[], save = true) {
+    if (
+      Array.isArray(this.gameIdsToDailyCheck) &&
+      Array.isArray(gameIds) &&
+      this.gameIdsToDailyCheck.length === gameIds.length &&
+      this.gameIdsToDailyCheck.every((v, i) => v === gameIds[i])
+    )
+      return;
+
+    await this.updateOnChange({ gameIdsToDailyCheck: gameIds }, { save });
+    return;
+  },
 };
 
 // statics.

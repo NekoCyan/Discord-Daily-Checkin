@@ -68,6 +68,20 @@ export interface IHoyolabInstanceMethods {
    * @returns A boolean indicating whether the user has set up their Hoyolab account cookie (true if both `ltoken_v2` and `ltuid_v2` are present, false otherwise).
    */
   isAccountSetted: () => boolean;
+  /**
+   * Set the preferred language for the user's Hoyolab interactions and content. This method updates the `lang` field with the provided language code.
+   * @param lang The language code to set as the user's preferred language (e.g., 'en', 'zh-cn', etc.).
+   * @param save [default=true] Whether to save the changes to the database immediately after updating in memory.
+   * @returns A promise that resolves when the operation is complete.
+   */
+  setLanguage: (lang: string, save?: boolean) => Promise<void>;
+  /**
+   * Set the game IDs for which the user wants to perform the daily check-in. This method updates the `gameIdsToDailyCheck` field with the provided array of game IDs.
+   * @param gameIds An array of game IDs to set for daily check-in.
+   * @param save [default=true] Whether to save the changes to the database immediately after updating in memory.
+   * @returns A promise that resolves when the operation is complete.
+   */
+  setGameIdsToDailyCheck: (gameIds: number[], save?: boolean) => Promise<void>;
 }
 export interface IHoyolabStaticsMethods {
   /**
