@@ -1,6 +1,7 @@
 import { ServiceError } from '../errors/ServiceError.js';
 import { _DefaultHeaders } from '../utilities/Constants.js';
 import { newAxiosInstance } from '../utilities/Request.js';
+import { timestampStartOfTheDay } from '../utilities/Utils.js';
 import BaseService from './baseService.js';
 
 export interface HoyolabServiceOptions {
@@ -128,11 +129,23 @@ class HoyolabService extends BaseService {
           alias: ['vi-vn', 'VN', 'VI'],
         },
       ],
-      gameIdToGameName: {
-        1: 'Honkai Impact 3rd',
-        2: 'Genshin Impact',
-        6: 'Honkai: Star Rail',
-        8: 'Zenless Zone Zero',
+      gameIdToGameInfo: {
+        1: {
+          name: 'Honkai Impact 3rd',
+          abbr: 'HI3',
+        },
+        2: {
+          name: 'Genshin Impact',
+          abbr: 'GI',
+        },
+        6: {
+          name: 'Honkai: Star Rail',
+          abbr: 'HSR',
+        },
+        8: {
+          name: 'Zenless Zone Zero',
+          abbr: 'ZZZ',
+        },
       },
       ActId: {
         ZZZ: 'e202406031448091',
@@ -147,6 +160,12 @@ class HoyolabService extends BaseService {
         HI3: 'https://sg-public-api.hoyolab.com/event/mani',
         gameRecordCard:
           'https://sg-public-api.hoyolab.com/event/game_record/app/card/wapi/getGameRecordCard',
+      },
+      CHECKIN_WEB: {
+        ZZZ: 'https://act.hoyolab.com/bbs/event/signin/zzz/e202406031448091.html?act_id=e202406031448091',
+        HSR: 'https://act.hoyolab.com/bbs/event/signin/hkrpg/index.html?act_id=e202303301540311',
+        GI: 'https://act.hoyolab.com/ys/event/signin-sea-v3/index.html?act_id=e202102251931481',
+        HI3: 'https://act.hoyolab.com/bbs/event/signin-bh3/index.html?act_id=e202110291205111',
       },
       DAILY_RESET_TIMEZONE: 'Asia/Hong_Kong',
     };
@@ -506,6 +525,121 @@ class HoyolabService extends BaseService {
   }
   // #endregion
 
+  // #region Get attendance information for each game account.
+  async getZZZCheckInInfo(cache?: HoyolabCheckInCache['zzz']) {
+    const attendance = cache?.calendar ?? (await HoyolabService.ZZZCalendar(this.lang)).data;
+    const info = cache?.info ?? (await this.ZZZInfo()).data;
+
+    const calendar = attendance.awards;
+
+    const todayRewards: CalendarAward[] = [];
+    const tmrRewards: CalendarAward[] = [];
+
+    // Get calendar rewards.
+    const todayIndex = info.total_sign_day - 1; // total_sign_day is 1-based.
+    const today = calendar[todayIndex];
+    if (today) todayRewards.push(today);
+    const tmr = calendar[todayIndex + 1];
+    if (tmr) tmrRewards.push(tmr);
+
+    // Maybe there's extra rewards but current no info.
+
+    const moment = timestampStartOfTheDay(this.Constants.DAILY_RESET_TIMEZONE)!;
+
+    return {
+      isTodayChecked: info.is_sign,
+      todayRewards,
+      tomorrowRewards: tmrRewards,
+      currentDay: todayIndex + 1,
+      nextDayTimestamp: moment.add(1, 'day').valueOf(),
+    };
+  }
+  async getHSRCheckInInfo(cache?: HoyolabCheckInCache['hsr']) {
+    const attendance = cache?.calendar ?? (await HoyolabService.HSRCalendar(this.lang)).data;
+    const info = cache?.info ?? (await this.HSRInfo()).data;
+
+    const calendar = attendance.awards;
+
+    const todayRewards: CalendarAward[] = [];
+    const tmrRewards: CalendarAward[] = [];
+
+    // Get calendar rewards.
+    const todayIndex = info.total_sign_day - 1; // total_sign_day is 1-based.
+    const today = calendar[todayIndex];
+    if (today) todayRewards.push(today);
+    const tmr = calendar[todayIndex + 1];
+    if (tmr) tmrRewards.push(tmr);
+
+    // Maybe there's extra rewards but current no info.
+
+    const moment = timestampStartOfTheDay(this.Constants.DAILY_RESET_TIMEZONE)!;
+
+    return {
+      isTodayChecked: info.is_sign,
+      todayRewards,
+      tomorrowRewards: tmrRewards,
+      currentDay: todayIndex + 1,
+      nextDayTimestamp: moment.add(1, 'day').valueOf(),
+    };
+  }
+  async getGICheckInInfo(cache?: HoyolabCheckInCache['gi']) {
+    const attendance = cache?.calendar ?? (await HoyolabService.GICalendar(this.lang)).data;
+    const info = cache?.info ?? (await this.GIInfo()).data;
+
+    const calendar = attendance.awards;
+
+    const todayRewards: CalendarAward[] = [];
+    const tmrRewards: CalendarAward[] = [];
+
+    // Get calendar rewards.
+    const todayIndex = info.total_sign_day - 1; // total_sign_day is 1-based.
+    const today = calendar[todayIndex];
+    if (today) todayRewards.push(today);
+    const tmr = calendar[todayIndex + 1];
+    if (tmr) tmrRewards.push(tmr);
+
+    // Maybe there's extra rewards but current no info.
+
+    const moment = timestampStartOfTheDay(this.Constants.DAILY_RESET_TIMEZONE)!;
+
+    return {
+      isTodayChecked: info.is_sign,
+      todayRewards,
+      tomorrowRewards: tmrRewards,
+      currentDay: todayIndex + 1,
+      nextDayTimestamp: moment.add(1, 'day').valueOf(),
+    };
+  }
+  async getHI3CheckInInfo(cache?: HoyolabCheckInCache['hi3']) {
+    const attendance = cache?.calendar ?? (await HoyolabService.HI3Calendar(this.lang)).data;
+    const info = cache?.info ?? (await this.HI3Info()).data;
+
+    const calendar = attendance.awards;
+
+    const todayRewards: CalendarAward[] = [];
+    const tmrRewards: CalendarAward[] = [];
+
+    // Get calendar rewards.
+    const todayIndex = info.total_sign_day - 1; // total_sign_day is 1-based.
+    const today = calendar[todayIndex];
+    if (today) todayRewards.push(today);
+    const tmr = calendar[todayIndex + 1];
+    if (tmr) tmrRewards.push(tmr);
+
+    // Maybe there's extra rewards but current no info.
+
+    const moment = timestampStartOfTheDay(this.Constants.DAILY_RESET_TIMEZONE)!;
+
+    return {
+      isTodayChecked: info.is_sign,
+      todayRewards,
+      tomorrowRewards: tmrRewards,
+      currentDay: todayIndex + 1,
+      nextDayTimestamp: moment.add(1, 'day').valueOf(),
+    };
+  }
+  // #endregion
+
   /**
    * Fetches the game record card information for the account, which may include linked game accounts, their levels, regions, and other related info.
    * @param refetch Whether to force refetch the data from the API even if it's already cached. Default is `false`, which means it will return the cached data if available.
@@ -533,6 +667,58 @@ class HoyolabService extends BaseService {
     if (res.status !== 200) throw this.error(`Failed to fetch Game Record Card.`, axiosData);
     this.handleRetcodeOnResponse(axiosData);
     return (this.gameRecordCard = axiosData.data);
+  }
+
+  /**
+   * Gets the game information for the games that need to perform daily check, including the functions to get attendance info and perform check-in action for each game. This function will be used in the daily check-in process to loop through the games that need to check-in and perform the actions accordingly.
+   * @param gameIdsToDailyCheck An array of game IDs that need to perform daily check-in. The game IDs should correspond to the keys in `Constants.gameIdToGameInfo`. For example, if you want to perform daily check-in for Genshin Impact and Honkai: Star Rail, you can pass `[2, 6]` as the argument.
+   * @param cache An optional cache object containing previously fetched check-in data for the games.
+   * @returns An array of game information objects, each containing the game ID, name, abbreviation, and functions to get attendance info and perform check-in.
+   */
+  getGamesInfoWithDailyCheck(
+    gameIdsToDailyCheck: number[],
+    cache?: HoyolabCheckInCache,
+  ): GameInfo[] {
+    return gameIdsToDailyCheck.map((_id) => {
+      const id = _id as keyof typeof HoyolabService.Constants.gameIdToGameInfo;
+      const gameInfo = HoyolabService.Constants.gameIdToGameInfo[id];
+
+      let getAttendanceFunc: GameInfo['getAttendance'];
+      let doCheckInFunc: GameInfo['doCheckIn'];
+
+      switch (gameInfo.abbr) {
+        case 'ZZZ':
+          getAttendanceFunc = this.getZZZCheckInInfo.bind(this, cache?.zzz);
+          doCheckInFunc = this.ZZZDoCheckIn.bind(this);
+          break;
+        case 'HSR':
+          getAttendanceFunc = this.getHSRCheckInInfo.bind(this, cache?.hsr);
+          doCheckInFunc = this.HSRDoCheckIn.bind(this);
+          break;
+        case 'GI':
+          getAttendanceFunc = this.getGICheckInInfo.bind(this, cache?.gi);
+          doCheckInFunc = this.GIDoCheckIn.bind(this);
+          break;
+        case 'HI3':
+          getAttendanceFunc = this.getHI3CheckInInfo.bind(this, cache?.hi3);
+          doCheckInFunc = this.HI3DoCheckIn.bind(this);
+          break;
+        default:
+          throw new Error(`Unsupported game Abbr: ${gameInfo.abbr}`);
+      }
+
+      return {
+        id,
+        name: gameInfo.name,
+        abbr: gameInfo.abbr,
+        checkInWebUrl:
+          HoyolabService.Constants.CHECKIN_WEB[
+            gameInfo.abbr.toUpperCase() as keyof typeof HoyolabService.Constants.CHECKIN_WEB
+          ],
+        getAttendance: getAttendanceFunc,
+        doCheckIn: doCheckInFunc,
+      };
+    });
   }
 
   toObject() {
@@ -657,6 +843,24 @@ type GICheckInResponse = HoyolabResponse<{
 type HI3CheckInResponse = HoyolabResponse<{
   code: string;
 }>;
+export interface HoyolabCheckInCache {
+  zzz?: {
+    calendar?: ZZZCalendarResponse['data'];
+    info?: ZZZInfoResponse['data'];
+  };
+  hsr?: {
+    calendar?: HSRCalendarResponse['data'];
+    info?: HSRInfoResponse['data'];
+  };
+  gi?: {
+    calendar?: GICalendarResponse['data'];
+    info?: GIInfoResponse['data'];
+  };
+  hi3?: {
+    calendar?: HI3CalendarResponse['data'];
+    info?: HI3InfoResponse['data'];
+  };
+}
 
 interface GameRecordDataItem {
   name: string;
@@ -691,3 +895,20 @@ interface GameRecordCardList {
   list: GameRecordCard[];
 }
 type GameRecordCardResponse = HoyolabResponse<GameRecordCardList>;
+
+interface GameInfo {
+  id: number;
+  name: string;
+  abbr: string;
+  checkInWebUrl: string;
+  getAttendance:
+    | HoyolabService['getZZZCheckInInfo']
+    | HoyolabService['getHSRCheckInInfo']
+    | HoyolabService['getGICheckInInfo']
+    | HoyolabService['getHI3CheckInInfo'];
+  doCheckIn:
+    | HoyolabService['ZZZDoCheckIn']
+    | HoyolabService['HSRDoCheckIn']
+    | HoyolabService['GIDoCheckIn']
+    | HoyolabService['HI3DoCheckIn'];
+}
