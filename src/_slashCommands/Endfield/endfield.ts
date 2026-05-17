@@ -34,7 +34,7 @@ export default {
             .setRequired(false),
         ),
     )
-    .addSubcommand((sub) => sub.setName('checkin').setDescription('Manually do check-in.'))
+    .addSubcommand((sub) => sub.setName('check-in').setDescription('Manually do check-in.'))
     .addSubcommand((sub) =>
       sub
         .setName('set-account-token')
@@ -79,7 +79,7 @@ export default {
         await EndfieldProfile(int, target);
         break;
       }
-      case 'checkin': {
+      case 'check-in': {
         await EndfieldDoCheckIn(int.client, int.interaction.user, int);
         break;
       }

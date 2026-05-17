@@ -32,7 +32,7 @@ export default {
         ),
     )
     .addSubcommand((sub) =>
-      sub.setName('checkin').setDescription('Manually do check-in for selected Hoyoverse Games.'),
+      sub.setName('check-in').setDescription('Manually do check-in for selected Hoyoverse Games.'),
     )
     .addSubcommand((sub) =>
       sub
@@ -111,7 +111,7 @@ export default {
         await underDevelopment();
         break;
       }
-      case 'checkin': {
+      case 'check-in': {
         // await EndfieldDoCheckIn(int.client, int.interaction.user, int);
         await underDevelopment();
         break;

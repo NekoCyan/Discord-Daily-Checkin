@@ -57,7 +57,7 @@ Displays the Endfield profile and check-in status for yourself or another user.
 ---
 
 <details>
-<summary><h5><code>/endfield checkin</code></h5></summary>
+<summary><h5><code>/endfield check-in</code></h5></summary>
 
 **Description:** Manually do check-in.
 
