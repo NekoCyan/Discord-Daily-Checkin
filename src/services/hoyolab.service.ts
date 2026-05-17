@@ -635,7 +635,14 @@ type ZZZCheckInResponse = HoyolabResponse<{
   success: number;
   is_risk: boolean;
 }>;
-type HSRCheckInResponse = HoyolabResponse<unknown>; // todo: implement the correct type
+type HSRCheckInResponse = HoyolabResponse<{
+  code: string;
+  risk_code: number;
+  gt: string;
+  challenge: string;
+  success: number;
+  is_risk: boolean;
+}>;
 type GICheckInResponse = HoyolabResponse<{
   code: string;
   first_bind: boolean;
@@ -647,7 +654,9 @@ type GICheckInResponse = HoyolabResponse<{
     is_risk: boolean;
   };
 }>;
-type HI3CheckInResponse = HoyolabResponse<unknown>; // todo: implement the correct type
+type HI3CheckInResponse = HoyolabResponse<{
+  code: string;
+}>;
 
 interface GameRecordDataItem {
   name: string;
