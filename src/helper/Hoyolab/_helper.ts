@@ -1,10 +1,13 @@
 import {
   ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   ContainerBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from 'discord.js';
 import HoyolabService from '../../services/hoyolab.service.js';
+import { TextDisplay } from '../_helper.js';
 
 type GameRecordCard = Awaited<ReturnType<HoyolabService['getGameRecordCard']>>['list'][number];
 
@@ -51,4 +54,43 @@ export function HoyolabLangSelectMenu(container: ContainerBuilder, currentLang: 
   return container.addActionRowComponents(
     new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu),
   );
+}
+
+export function HoyolabRewardSection(
+  container: ContainerBuilder,
+  reward: {
+    icon: string;
+    name: string;
+    cnt: number;
+  },
+) {
+  return TextDisplay(container, [`### ${reward.name}`, `x${reward.cnt}`], reward.icon);
+}
+
+export function HoyolabUserSection(container: ContainerBuilder, recordCard: GameRecordCard) {
+  const card = recordCard;
+  const logo = card.logo;
+
+  return TextDisplay(
+    container,
+    [
+      `> ### ${card.game_name}`,
+      `### UID: ${card.game_role_id}`,
+      `## ${card.nickname} (level ${card.level})`,
+      `Server: ${card.region_name}`,
+    ].join('\n'),
+    logo,
+  );
+}
+
+export function HoyolabProfilePrivateNotice(container: ContainerBuilder, withToggleButton = false) {
+  return TextDisplay(container, [
+    '-# *This profile is private. Only you can see it.*',
+    withToggleButton
+      ? new ButtonBuilder()
+          .setCustomId('hoyolab-toggle-profile-visibility')
+          .setLabel('Change Profile Visibility')
+          .setStyle(ButtonStyle.Primary)
+      : undefined,
+  ]);
 }
