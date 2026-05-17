@@ -112,6 +112,117 @@ Controls whether your Endfield profile is visible to other users via `/endfield 
 
 ---
 
+<details>
+<summary><h3><code>/hoyolab</code></h3> (contains subcommands)</summary>
+
+**Description:** A related Hoyolab (Hoyoverse Games) commands.
+
+A command group containing subcommands for managing your Hoyoverse Games account, profile, cookie setup, and daily check-in.
+
+| Availability | Value |
+| ------------ | ----- |
+| Guild        | ✅    |
+| Bot DM       | ✅    |
+| User Install | ✅    |
+
+#### Subcommands
+
+<details>
+<summary><h5><code>/hoyolab profile [target]</code></h5></summary>
+
+**Description:** Show the Hoyoverse Games check-in profile.
+
+Displays the Hoyoverse Games profile and check-in status for yourself or another user.
+
+| Option   | Type | Required | Description                                                                    |
+| -------- | ---- | -------- | ------------------------------------------------------------------------------ |
+| `target` | User | No       | Specifies the user that you want to see. Defaults to yourself if not provided. |
+
+</details>
+
+---
+
+<details>
+<summary><h5><code>/hoyolab check-in</code></h5></summary>
+
+**Description:** Manually do check-in for selected Hoyoverse Games.
+
+Triggers a manual daily check-in for your linked Hoyoverse Games accounts immediately.
+
+</details>
+
+---
+
+<details>
+<summary><h5><code>/hoyolab set-cookie &lt;cookie&gt;</code></h5></summary>
+
+**Description:** [Method 1] Set the cookie for Hoyoverse Games (Automatically daily once after completely setup).
+
+Links your Hoyoverse account to your Discord account by providing the full cookie string.
+
+| Option   | Type                 | Required | Description                    |
+| -------- | -------------------- | -------- | ------------------------------ |
+| `cookie` | String (0–300 chars) | Yes      | The account cookie you've got. |
+
+</details>
+
+---
+
+<details>
+<summary><h5><code>/hoyolab set-cookie-2 &lt;ltoken_v2&gt; &lt;ltuid_v2&gt;</code></h5></summary>
+
+**Description:** [Method 2] Set the cookie for Hoyoverse Games (Automatically daily once after completely setup).
+
+Links your Hoyoverse account by providing the individual `ltoken_v2` and `ltuid_v2` cookie fields separately.
+
+| Option      | Type                 | Required | Description                            |
+| ----------- | -------------------- | -------- | -------------------------------------- |
+| `ltoken_v2` | String (0–300 chars) | Yes      | Account cookie `ltoken_v2` you've got. |
+| `ltuid_v2`  | String (0–100 chars) | Yes      | Account cookie `ltuid_v2` you've got.  |
+
+</details>
+
+---
+
+<details>
+<summary><h5><code>/hoyolab delete-cookie</code></h5></summary>
+
+**Description:** Delete/Remove account cookie from your Discord account.
+
+Removes your linked Hoyoverse account cookie from your Discord account.
+
+</details>
+
+---
+
+<details>
+<summary><h5><code>/hoyolab setup-wizard</code></h5></summary>
+
+**Description:** Start a setup wizard to help you setup game for daily check-in or language preferences.
+
+Launches an interactive wizard that guides you through selecting games for daily check-in and configuring language preferences.
+
+</details>
+
+---
+
+<details>
+<summary><h5><code>/hoyolab set-visibility &lt;visibility&gt;</code></h5></summary>
+
+**Description:** Set the visibility of your Hoyoverse Games profile if you want the other users to see it.
+
+Controls whether your Hoyoverse Games profile is visible to other users via `/hoyolab profile` or the **Hoyolab Profile** context menu. Supports autocomplete — your current state is shown in the option list.
+
+| Option       | Type                  | Required | Description                                                                 |
+| ------------ | --------------------- | -------- | --------------------------------------------------------------------------- |
+| `visibility` | String (autocomplete) | Yes      | `public` or `private`. The autocomplete list highlights your current state. |
+
+</details>
+
+</details>
+
+---
+
 ## Context Menus
 
 <details>
@@ -122,6 +233,25 @@ Controls whether your Endfield profile is visible to other users via `/endfield 
 
 Right-click (or long-press on mobile) on any user → **Apps** → **Endfield Profile**.  
 Equivalent to running `/endfield profile target:<user>`.
+
+| Availability | Value |
+| ------------ | ----- |
+| Guild        | ✅    |
+| Bot DM       | ✅    |
+| User Install | ✅    |
+
+</details>
+
+---
+
+<details>
+<summary><h3>User Context Menu — <code>Hoyolab Profile</code></h3></summary>
+
+**Type:** User  
+**Description:** View the Hoyoverse Games check-in profile of any user directly from their profile context menu.
+
+Right-click (or long-press on mobile) on any user → **Apps** → **Hoyolab Profile**.  
+Equivalent to running `/hoyolab profile target:<user>`.
 
 | Availability | Value |
 | ------------ | ----- |
