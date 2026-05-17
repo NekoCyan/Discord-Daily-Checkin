@@ -4,6 +4,7 @@ import {
   SlashCommandBuilder,
 } from 'discord.js';
 import { SlashCommandHandler } from '../../../types/index.js';
+import { HoyolabDoCheckIn } from '../../helper/Hoyolab/DoCheckIn.js';
 import { HoyolabResetCookie } from '../../helper/Hoyolab/ResetCookie.js';
 import { HoyolabSetCookie } from '../../helper/Hoyolab/SetCookie.js';
 import { HoyolabSetupWizard } from '../../helper/Hoyolab/SetupWizard.js';
@@ -112,8 +113,7 @@ export default {
         break;
       }
       case 'check-in': {
-        // await EndfieldDoCheckIn(int.client, int.interaction.user, int);
-        await underDevelopment();
+        await HoyolabDoCheckIn(int.client, int.interaction.user, int);
         break;
       }
       case 'set-cookie': {

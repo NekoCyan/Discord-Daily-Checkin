@@ -1,5 +1,6 @@
 import { StringSelectMenuInteraction } from 'discord.js';
 import { SelectMenuHandler } from '../../../../types/index.js';
+import { HoyolabDoCheckIn } from '../../../helper/Hoyolab/DoCheckIn.js';
 import HoyolabModel from '../../../models/Hoyolab.js';
 
 export default {
@@ -19,8 +20,6 @@ export default {
     const gameIds = values.map((id) => parseInt(id)); // Convert to array of numbers.
     await model.setGameIdsToDailyCheck(gameIds);
 
-    // todo: daily once for selected games.
-
     if (values.length === 0) {
       await int.SendOrEdit(
         [
@@ -31,6 +30,7 @@ export default {
       );
     } else {
       await int.interaction.deferUpdate();
+      await HoyolabDoCheckIn(int.client, int.interaction.user, int);
     }
     return;
   },
