@@ -4,7 +4,7 @@ import EndfieldModel from '../../models/Endfield.js';
 import EndfieldService from '../../services/endfield.service.js';
 import CommandInteraction from '../../utilities/interaction/command.interaction.js';
 import { Separator, TextDisplay } from '../_helper.js';
-import { EndfieldRewardSection } from './_helper.js';
+import { EndfieldTodayRewardSection, EndfieldTomorrowRewardSection } from './_helper.js';
 
 /**
  * Handle the check-in process for Endfield, including token validation and database updates.
@@ -106,22 +106,11 @@ export async function EndfieldDoCheckIn(
   // Separator.
   Separator(container);
   // Today's rewards.
-  TextDisplay(container, `> ## Today's Rewards (Day ${checkInInfo.currentDay}):`);
-  checkedIn.todayRewards.forEach((reward) => {
-    EndfieldRewardSection(container, reward);
-  });
+  EndfieldTodayRewardSection(container, checkInInfo.currentDay, checkedIn.todayRewards);
   // Separator.
   Separator(container);
   // Tomorrow's rewards.
-  TextDisplay(container, "> ## Tomorrow's Rewards:");
-  const tmrRewards = checkedIn.tomorrowRewards;
-  if (tmrRewards.length > 0) {
-    tmrRewards.forEach((reward) => {
-      EndfieldRewardSection(container, reward);
-    });
-  } else {
-    TextDisplay(container, '## *No rewards for tomorrow or waiting for next month refresh.*');
-  }
+  EndfieldTomorrowRewardSection(container, checkInInfo.tomorrowRewards);
   // Separator.
   Separator(container);
   // Footer.
