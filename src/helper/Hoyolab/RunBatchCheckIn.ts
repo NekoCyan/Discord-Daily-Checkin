@@ -38,13 +38,6 @@ export async function HoyolabRunBatchCheckIn(
 
   logger.info(msg('Starting batch check-in process...'), 'hoyolab-check-in');
 
-  logger.debug(
-    {
-      ...options,
-    },
-    msg('Batch check-in options:'),
-  );
-
   /**
    * `{language}` => calendar data.
    * This is used to cache the calendar data for each game and language combination, so we don't have to fetch it multiple times during the batch check-in process, which can significantly reduce the number of API calls and improve performance.

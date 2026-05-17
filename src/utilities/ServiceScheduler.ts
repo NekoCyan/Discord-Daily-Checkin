@@ -4,6 +4,15 @@ import { EndfieldRunBatchCheckIn } from '../helper/Endfield/index.js';
 import { HoyolabRunBatchCheckIn } from '../helper/Hoyolab/index.js';
 import EndfieldService from '../services/endfield.service.js';
 
+const announceBatchCheckInOptions = (options: typeof BotClient.prototype.batchCheckInOptions) => {
+  logger.info(
+    {
+      ...options,
+    },
+    'Batch check-in options:',
+  );
+};
+
 let isRunning = false;
 
 // ! From now on, both service has the same timezone for daily reset, so group it together (run with async).
@@ -22,6 +31,7 @@ export async function runServiceScheduler(client: BotClient) {
   cron.schedule(
     '0 0 * * *',
     async () => {
+      announceBatchCheckInOptions(client.batchCheckInOptions);
       await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
       await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
     },
@@ -36,6 +46,7 @@ export async function runServiceScheduler(client: BotClient) {
   cron.schedule(
     '0 12 * * *',
     async () => {
+      announceBatchCheckInOptions(client.batchCheckInOptions);
       await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
       await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
     },
@@ -44,6 +55,7 @@ export async function runServiceScheduler(client: BotClient) {
     },
   );
   // Manual trigger once when the bot starts, to ensure users get checked in even if the bot restarts after the scheduled time.
+  announceBatchCheckInOptions(client.batchCheckInOptions);
   await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
   await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
 }

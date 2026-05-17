@@ -37,13 +37,6 @@ export async function EndfieldRunBatchCheckIn(
 
   logger.info(msg('Starting batch check-in process...'), 'endfield-check-in');
 
-  logger.debug(
-    {
-      ...options,
-    },
-    msg('Batch check-in options:'),
-  );
-
   let loopCount = 0;
 
   const batchSize = options.batchSize;
