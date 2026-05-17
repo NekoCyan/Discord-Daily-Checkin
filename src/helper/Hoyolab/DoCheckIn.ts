@@ -57,7 +57,7 @@ export async function HoyolabDoCheckIn(
   if (!isGameIdsSetted) {
     const errMsg = `You have not set your game for daily check-in. Please use ${client.mentionSlashCommand('hoyolab setup-wizard')} to set it, so the bot knows which games you want to check in daily.`;
     if (int) return intReply(errMsg);
-    else user.send(errMsg).catch(() => null);
+    else return;
   }
 
   const gamesInfo = service.getGamesInfoWithDailyCheck(model.gameIdsToDailyCheck, cache);
