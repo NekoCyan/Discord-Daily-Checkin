@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.1] - 2026-05-17
+
+### Features
+
+- **Profile hint in Hoyolab check-in message** — The check-in completion message now includes a hint to use `/hoyolab profile` to view today's received rewards.
+
+### Refactors
+
+- **`DoCheckIn` uses reward section helpers** — Endfield's `DoCheckIn` now delegates today's and tomorrow's reward rendering to `EndfieldTodayRewardSection` / `EndfieldTomorrowRewardSection`, removing duplicated inline rendering logic.
+- **DRY reward section header strings** — Extracted repeated `"Today's Rewards"` and `"Tomorrow's Rewards"` header strings into local constants (`todayText`, `tomorrowText`) inside both Endfield and Hoyolab reward section helpers to eliminate string duplication.
+
+---
+
 ## [1.1.0] - 2026-05-17
 
 ### Features
