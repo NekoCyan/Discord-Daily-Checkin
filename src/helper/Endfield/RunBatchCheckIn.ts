@@ -113,9 +113,9 @@ export async function EndfieldRunBatchCheckIn(
       if (delayPerBatchMs > 0) await sleep(delayPerBatchMs);
     }
   } catch (error) {
-    logger.error(`[Endfield/BatchCheckIn] Error during batch check-in: ${error}`);
+    logger.error({ ...(error as Error) }, msg(`Error during batch check-in:`));
   } finally {
-    logger.info('[Endfield/BatchCheckIn] Batch check-in process completed.', 'endfield-check-in');
+    logger.info(msg('Batch check-in process completed.'), 'endfield-check-in');
     isRunning = false;
   }
 }
