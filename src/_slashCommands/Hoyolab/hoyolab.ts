@@ -50,7 +50,7 @@ export default {
             .setName('cookie')
             .setDescription("The account cookie you've got.")
             .setMinLength(0)
-            .setMaxLength(300)
+            .setMaxLength(2000)
             .setRequired(true),
         ),
     )
@@ -65,7 +65,7 @@ export default {
             .setName('ltoken_v2')
             .setDescription("Account cookie ltoken_v2 you've got.")
             .setMinLength(0)
-            .setMaxLength(300)
+            .setMaxLength(500)
             .setRequired(true),
         )
         .addStringOption((opt) =>

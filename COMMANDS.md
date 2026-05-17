@@ -160,9 +160,9 @@ Triggers a manual daily check-in for your linked Hoyoverse Games accounts immedi
 
 Links your Hoyoverse account to your Discord account by providing the full cookie string.
 
-| Option   | Type                 | Required | Description                    |
-| -------- | -------------------- | -------- | ------------------------------ |
-| `cookie` | String (0–300 chars) | Yes      | The account cookie you've got. |
+| Option   | Type                  | Required | Description                    |
+| -------- | --------------------- | -------- | ------------------------------ |
+| `cookie` | String (0–2000 chars) | Yes      | The account cookie you've got. |
 
 </details>
 
@@ -177,7 +177,7 @@ Links your Hoyoverse account by providing the individual `ltoken_v2` and `ltuid_
 
 | Option      | Type                 | Required | Description                            |
 | ----------- | -------------------- | -------- | -------------------------------------- |
-| `ltoken_v2` | String (0–300 chars) | Yes      | Account cookie `ltoken_v2` you've got. |
+| `ltoken_v2` | String (0–500 chars) | Yes      | Account cookie `ltoken_v2` you've got. |
 | `ltuid_v2`  | String (0–100 chars) | Yes      | Account cookie `ltuid_v2` you've got.  |
 
 </details>
