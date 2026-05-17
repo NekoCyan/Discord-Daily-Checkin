@@ -6,7 +6,10 @@
 [![Docker Image Version](https://img.shields.io/github/v/release/NekoCyan/Discord-Daily-Checkin?label=docker&logo=docker&color=2496ED)](https://github.com/NekoCyan/Discord-Daily-Checkin/pkgs/container/discord-daily-checkin)
 [![GitHub last commit](https://img.shields.io/github/last-commit/NekoCyan/Discord-Daily-Checkin)](https://github.com/NekoCyan/Discord-Daily-Checkin/commits/main)
 
-A Discord bot that automatically performs daily check-ins and monitors in-game real-time resources for **Arknights: Endfield** on your behalf.
+A Discord bot that automatically performs daily check-ins on your behalf.
+
+- **Arknights: Endfield** — daily check-ins with in-game real-time resource monitoring.
+- **Zenless Zone Zero**, **Honkai: Star Rail**, **Genshin Impact**, **Honkai Impact 3rd** — Hoyoverse Games daily check-ins (no real-time monitoring).
 
 - Runs every day at **00:00 AM** (with a backup at **12:00 PM**) using the `Asia/Hong_Kong` timezone.
 
@@ -168,6 +171,56 @@ if (content) {
 
 4. The token will be printed in the console and copied to your clipboard automatically.
 5. Use the token with the bot's `/endfield set-account-token` slash command to register your account.
+
+---
+
+## Retrieving Your Hoyolab Account Cookie
+
+The bot requires your HoYoLAB account cookie to perform check-ins for Zenless Zone Zero, Honkai: Star Rail, Genshin Impact, and Honkai Impact 3rd on your behalf.
+
+### Getting your cookie
+
+You have to check in manually first to get your cookie, follow these steps (click to open screenshot):
+
+1. Open [HoYoLAB](https://www.hoyolab.com/home) and login if you haven't (obviously)
+
+2. <details>
+   <summary>Open dev tool (<kbd>Ctrl+Shift+I</kbd> or right click > Inspect)</summary>
+   // Image here.
+   </details>
+
+3. <details>
+   <summary>For Chromium users, click on the Application tab. If not found, click on the arrow.</summary>
+   // Image here.
+   </details>
+   <details>
+   <summary>For Firefox/Gecko-based browsers, click on the Storage tab.</summary>
+   // Image here.
+   </details>
+
+4. <details>
+   <summary>On the filter box, type <code>v2</code>. You might want to expand the dev tools to see clearly.</summary>
+   // Image here.
+   </details>
+
+5. <details>
+   <summary>Find <code>ltoken_v2</code> and <code>ltuid_v2</code>, click on them, and copy the value below.</summary>
+   // Image here.
+   </details>
+
+6. <details open>
+   <summary>Write <code>ltuid_v2=PASTE_ltuid_v2; ltoken_v2=PASTE_ltoken_v2</code> like the screenshot.</summary>
+
+   I write the line on the browser url to make it easier. Pay attention, use semicolon (;) and not colon (:)
+
+   It should look like this: `ltuid_v2=249806310; ltoken_v2=v2_CAISDG...`
+
+   // Image here.
+   </details>
+
+7. Copy that. That's your cookie, keep it safe and do **NOT** share it with anyone!
+
+Then use the cookie with the bot's `/hoyolab set-cookie` (if it's a stringified of cookie) or `/hoyolab set-cookie-2` (with separated ltoken_v2 and ltuid_v2 input) slash command to register your account.
 
 ---
 
