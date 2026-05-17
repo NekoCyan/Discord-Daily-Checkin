@@ -143,7 +143,13 @@ export async function HoyolabDoCheckIn(
     Separator(container);
   });
   // Footer.
-  TextDisplay(container, nextCheckInTime);
+  TextDisplay(
+    container,
+    [
+      `You can use ${client.mentionSlashCommand('hoyolab profile')} to see what you received today.`,
+      nextCheckInTime,
+    ].join('\n'),
+  );
 
   if (int)
     return intReply({
