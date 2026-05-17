@@ -25,6 +25,13 @@ export async function HoyolabSetCookie(int: CommandInteraction, cookie: string):
     return int.SendOrEdit(
       'The Hoyolab cookie that you provided is invalid. Please double-check and try again.',
     );
+  // Check if user has any game accounts linked to the Hoyolab account, if not, no need to save the cookie since it cannot be used for check-in.
+  const gameAccounts = await service.getGameRecordCard();
+  if (gameAccounts.list.length === 0) {
+    return int.SendOrEdit(
+      'The Hoyolab account linked to the cookie you provided does not have any game accounts linked to it. Please make sure you have linked at least one game account to your Hoyolab account before setting the cookie.',
+    );
+  }
 
   // Save the valid token to the database
   const model = await HoyolabModel.getOrCreate(int.interaction.user.id);
