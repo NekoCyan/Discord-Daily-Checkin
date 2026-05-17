@@ -186,26 +186,26 @@ You have to check in manually first to get your cookie, follow these steps (clic
 
 2. <details>
    <summary>Open dev tool (<kbd>Ctrl+Shift+I</kbd> or right click > Inspect)</summary>
-   // Image here.
+   <img alt="image" src="https://github.com/user-attachments/assets/8c624b02-84aa-44da-8f6f-2e1d02e49a06" />
    </details>
 
 3. <details>
    <summary>For Chromium users, click on the Application tab. If not found, click on the arrow.</summary>
-   // Image here.
+   <img alt="image" src="https://github.com/user-attachments/assets/a77c6bbc-861b-4bb4-bd19-86da23271747" />
    </details>
    <details>
    <summary>For Firefox/Gecko-based browsers, click on the Storage tab.</summary>
-   // Image here.
+   <img alt="image" src="https://github.com/user-attachments/assets/450944f1-eb13-4227-bac2-bf11dbe3d3f8" />
    </details>
 
 4. <details>
    <summary>On the filter box, type <code>v2</code>. You might want to expand the dev tools to see clearly.</summary>
-   // Image here.
+   <img alt="image" src="https://github.com/user-attachments/assets/cdda8d35-f323-4eb8-8b06-1ad37decd230" />
    </details>
 
 5. <details>
    <summary>Find <code>ltoken_v2</code> and <code>ltuid_v2</code>, click on them, and copy the value below.</summary>
-   // Image here.
+   <img alt="image" src="https://github.com/user-attachments/assets/0f6d4e87-4f58-48d9-92dc-acfc8bc8b16e" />
    </details>
 
 6. <details open>
@@ -215,7 +215,7 @@ You have to check in manually first to get your cookie, follow these steps (clic
 
    It should look like this: `ltuid_v2=249806310; ltoken_v2=v2_CAISDG...`
 
-   // Image here.
+   <img alt="image" src="https://github.com/user-attachments/assets/5bf13c4e-ff6d-460d-bd5b-3be76a091e36" />
    </details>
 
 7. Copy that. That's your cookie, keep it safe and do **NOT** share it with anyone!
