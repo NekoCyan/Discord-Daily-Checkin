@@ -11,7 +11,7 @@ export default {
     // If the user doesn't have a valid cookie, prompt them to set it first.
     if (!model || !model.isAccountSetted())
       return int.SendOrEdit(
-        `Your Hoyolab account is not set up yet. Please use the ${int.client.mentionSlashCommand('hoyolab set-cookie')} command to link your account before selecting games for daily check-in.`,
+        `Your Hoyolab account is not set up yet. Please use the ${int.client.mentionSlashCommand('hoyolab set-cookie')} or ${int.client.mentionSlashCommand('hoyolab set-cookie-2')} command to link your account before selecting games for daily check-in.`,
         true,
       );
 

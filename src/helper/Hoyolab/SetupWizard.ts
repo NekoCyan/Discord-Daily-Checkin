@@ -17,7 +17,7 @@ export async function HoyolabSetupWizard(
   // If the user doesn't have a valid cookie, prompt them to set it first.
   if (!model || !model.isAccountSetted())
     return int.SendOrEdit(
-      `It looks like you haven't set up your Hoyolab account cookie yet. Please use the ${int.client.mentionSlashCommand('hoyolab set-cookie')} command to link your account before using the setup wizard.`,
+      `It looks like you haven't set up your Hoyolab account cookie yet. Please use the ${int.client.mentionSlashCommand('hoyolab set-cookie')} or ${int.client.mentionSlashCommand('hoyolab set-cookie-2')} command to link your account before using the setup wizard.`,
     );
 
   const ltoken_v2 = model.ltoken_v2;
