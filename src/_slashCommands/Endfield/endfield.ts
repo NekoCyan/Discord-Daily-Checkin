@@ -4,9 +4,9 @@ import {
   SlashCommandBuilder,
 } from 'discord.js';
 import { SlashCommandHandler } from '../../../types/index.js';
-import { EndfieldDoCheckIn } from '../../helper/Endfield/DoCheckIn.js';
-import { EndfieldProfile } from '../../helper/Endfield/Profile.js';
 import {
+  EndfieldDoCheckIn,
+  EndfieldProfile,
   EndfieldResetAccountToken,
   EndfieldSetAccountToken,
   EndfieldSetVisibility,

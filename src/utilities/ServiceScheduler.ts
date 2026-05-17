@@ -27,13 +27,19 @@ export async function runServiceScheduler(client: BotClient) {
   if (isRunning) return logger.warn('Scheduler is already running. Ignoring duplicate call.');
   isRunning = true;
 
+  const triggerBatchCheckIn = async () => {
+    logger.warn('// Starting batch check-in process.', 'batch-check-in');
+    announceBatchCheckInOptions(client.batchCheckInOptions);
+    await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
+    await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
+    logger.warn('// Finished batch check-in process.', 'batch-check-in');
+  };
+
   // Schedule batch check-in to run at 00:00 (midnight) every day, according to the timezone specified in EndfieldService.Constants.DAILY_RESET_TIMEZONE.
   cron.schedule(
     '0 0 * * *',
     async () => {
-      announceBatchCheckInOptions(client.batchCheckInOptions);
-      await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
-      await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
+      await triggerBatchCheckIn();
     },
     {
       timezone: EndfieldService.Constants.DAILY_RESET_TIMEZONE,
@@ -46,16 +52,12 @@ export async function runServiceScheduler(client: BotClient) {
   cron.schedule(
     '0 12 * * *',
     async () => {
-      announceBatchCheckInOptions(client.batchCheckInOptions);
-      await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
-      await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
+      await triggerBatchCheckIn();
     },
     {
       timezone: EndfieldService.Constants.DAILY_RESET_TIMEZONE,
     },
   );
   // Manual trigger once when the bot starts, to ensure users get checked in even if the bot restarts after the scheduled time.
-  announceBatchCheckInOptions(client.batchCheckInOptions);
-  await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
-  await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
+  await triggerBatchCheckIn();
 }

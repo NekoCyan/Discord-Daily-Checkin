@@ -4,10 +4,14 @@ import {
   SlashCommandBuilder,
 } from 'discord.js';
 import { SlashCommandHandler } from '../../../types/index.js';
-import { HoyolabDoCheckIn } from '../../helper/Hoyolab/DoCheckIn.js';
-import { HoyolabResetCookie } from '../../helper/Hoyolab/ResetCookie.js';
-import { HoyolabSetCookie } from '../../helper/Hoyolab/SetCookie.js';
-import { HoyolabSetupWizard } from '../../helper/Hoyolab/SetupWizard.js';
+import {
+  HoyolabDoCheckIn,
+  HoyolabProfile,
+  HoyolabResetCookie,
+  HoyolabSetCookie,
+  HoyolabSetupWizard,
+  HoyolabSetVisibility,
+} from '../../helper/Hoyolab/index.js';
 import HoyolabModel from '../../models/Hoyolab.js';
 import { cookieStringify } from '../../utilities/Utils.js';
 
@@ -103,13 +107,10 @@ export default {
     await int.SendOrEdit(true);
     const subCommand = int.interaction.options.getSubcommand();
 
-    const underDevelopment = () =>
-      int.SendOrEdit('This feature is still under development. Please stay tuned for updates!');
-
     switch (subCommand) {
       case 'profile': {
-        // const target = int.interaction.options.getUser('target') ?? int.interaction.user;
-        await underDevelopment();
+        const target = int.interaction.options.getUser('target') ?? int.interaction.user;
+        await HoyolabProfile(int, target);
         break;
       }
       case 'check-in': {
@@ -136,8 +137,8 @@ export default {
         break;
       }
       case 'set-visibility': {
-        // const visibility = int.interaction.options.getString('visibility');
-        await underDevelopment();
+        const visibility = int.interaction.options.getString('visibility');
+        await HoyolabSetVisibility(int, visibility?.toLowerCase());
         break;
       }
     }
