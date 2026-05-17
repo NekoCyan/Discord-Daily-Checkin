@@ -341,6 +341,21 @@ class HoyolabService extends BaseService {
     this.handleRetcodeOnResponse(axiosData);
     return axiosData;
   }
+  static async getAllGamesCalendar(lang: string) {
+    const [zzzCalendar, hsrCalendar, giCalendar, hi3Calendar] = await Promise.all([
+      this.ZZZCalendar(lang).catch(() => null),
+      this.HSRCalendar(lang).catch(() => null),
+      this.GICalendar(lang).catch(() => null),
+      this.HI3Calendar(lang).catch(() => null),
+    ]);
+
+    return {
+      zzz: zzzCalendar?.data,
+      hsr: hsrCalendar?.data,
+      gi: giCalendar?.data,
+      hi3: hi3Calendar?.data,
+    };
+  }
   // #endregion
 
   // #region Info APIs - Used to get general information about if user is checkd-in, current sign-in day, etc.

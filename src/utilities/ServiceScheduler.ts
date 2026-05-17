@@ -1,9 +1,12 @@
 import cron from 'node-cron';
 import BotClient from '../BotClient.js';
 import { EndfieldRunBatchCheckIn } from '../helper/Endfield/index.js';
+import { HoyolabRunBatchCheckIn } from '../helper/Hoyolab/index.js';
 import EndfieldService from '../services/endfield.service.js';
 
 let isRunning = false;
+
+// ! From now on, both service has the same timezone for daily reset, so group it together (run with async).
 
 /**
  * Initializes and runs the service scheduler for the bot. This function sets up scheduled tasks (using cron) to run specific services at defined intervals.
@@ -11,14 +14,17 @@ let isRunning = false;
  * @param client The bot client instance.
  * @returns void
  */
-export function runServiceScheduler(client: BotClient) {
+export async function runServiceScheduler(client: BotClient) {
   if (isRunning) return logger.warn('Scheduler is already running. Ignoring duplicate call.');
   isRunning = true;
 
   // Schedule batch check-in to run at 00:00 (midnight) every day, according to the timezone specified in EndfieldService.Constants.DAILY_RESET_TIMEZONE.
   cron.schedule(
     '0 0 * * *',
-    async () => await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions),
+    async () => {
+      await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
+      await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
+    },
     {
       timezone: EndfieldService.Constants.DAILY_RESET_TIMEZONE,
     },
@@ -29,11 +35,15 @@ export function runServiceScheduler(client: BotClient) {
    */
   cron.schedule(
     '0 12 * * *',
-    async () => await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions),
+    async () => {
+      await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
+      await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
+    },
     {
       timezone: EndfieldService.Constants.DAILY_RESET_TIMEZONE,
     },
   );
   // Manual trigger once when the bot starts, to ensure users get checked in even if the bot restarts after the scheduled time.
-  EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
+  await EndfieldRunBatchCheckIn(client, client.batchCheckInOptions);
+  await HoyolabRunBatchCheckIn(client, client.batchCheckInOptions);
 }
