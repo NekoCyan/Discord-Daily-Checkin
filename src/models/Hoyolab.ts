@@ -135,6 +135,8 @@ HoyolabSchema.statics = {
 
     return this.find({
       ltoken_v2: { $ne: '' },
+      ltuid_v2: { $ne: '' },
+      gameIdsToDailyCheck: { $not: { $size: 0 } },
       lastDailyChecked: { $ne: timeNow },
     })
       .limit(size)
