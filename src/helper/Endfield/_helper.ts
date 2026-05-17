@@ -113,3 +113,60 @@ export function EndfieldIngameRealTimeResourcesSection(
       .join('\n'),
   );
 }
+
+export function EndfieldTodayRewardSection(
+  container: ContainerBuilder,
+  currentDay: number,
+  rewards: Parameters<typeof EndfieldRewardSection>[1][],
+) {
+  if (rewards.length === 0)
+    return TextDisplay(container, [
+      `> ## Today's Rewards (Day ${currentDay}):`,
+      '## *No rewards for today or waiting for next month refresh.*',
+    ]);
+
+  if (rewards.length === 1) {
+    const reward = rewards[0]!;
+    return TextDisplay(
+      container,
+      [
+        `> ## Today's Rewards (Day ${currentDay}):`,
+        `### ${reward.name} (x${reward.count})`,
+        `-# ${reward.id}`,
+      ],
+      reward.icon,
+    );
+  }
+
+  TextDisplay(container, `> ## Today's Rewards (Day ${currentDay}):`);
+  rewards.forEach((reward) => {
+    EndfieldRewardSection(container, reward);
+  });
+  return container;
+}
+
+export function EndfieldTomorrowRewardSection(
+  container: ContainerBuilder,
+  rewards: Parameters<typeof EndfieldRewardSection>[1][],
+) {
+  if (rewards.length === 0)
+    return TextDisplay(container, [
+      "> ## Tomorrow's Rewards:",
+      '## *No rewards for tomorrow or waiting for next month refresh.*',
+    ]);
+
+  if (rewards.length === 1) {
+    const reward = rewards[0]!;
+    return TextDisplay(
+      container,
+      [`> ## Tomorrow's Rewards:`, `### ${reward.name} (x${reward.count})`, `-# ${reward.id}`],
+      reward.icon,
+    );
+  }
+
+  TextDisplay(container, "> ## Tomorrow's Rewards:");
+  rewards.forEach((reward) => {
+    EndfieldRewardSection(container, reward);
+  });
+  return container;
+}

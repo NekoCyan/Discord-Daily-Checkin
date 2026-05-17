@@ -11,8 +11,9 @@ import {
   EndfieldIngameRealTimeResourcesSection,
   EndfieldIngameUserSection,
   EndfieldProfilePrivateNotice,
-  EndfieldRewardSection,
   EndfieldSkportUserSection,
+  EndfieldTodayRewardSection,
+  EndfieldTomorrowRewardSection,
 } from './_helper.js';
 import { EndfieldSetVisibility } from './SetVisibility.js';
 
@@ -137,22 +138,11 @@ export async function EndfieldProfile(
         // Separator.
         Separator(container);
         // Today's rewards.
-        TextDisplay(container, `> ## Today's Rewards (Day ${userCheckin.currentDay}):`);
-        userCheckin.todayRewards.forEach((reward) => {
-          EndfieldRewardSection(container, reward);
-        });
+        EndfieldTodayRewardSection(container, userCheckin.currentDay, userCheckin.todayRewards);
         // Separator.
         Separator(container);
         // Tomorrow's rewards.
-        TextDisplay(container, "> ## Tomorrow's Rewards:");
-        const tmrRewards = userCheckin.tomorrowRewards;
-        if (tmrRewards.length > 0) {
-          tmrRewards.forEach((reward) => {
-            EndfieldRewardSection(container, reward);
-          });
-        } else {
-          TextDisplay(container, '## *No rewards for tomorrow or waiting for next month refresh.*');
-        }
+        EndfieldTomorrowRewardSection(container, userCheckin.tomorrowRewards);
         // Separator.
         Separator(container);
         // Footer.
