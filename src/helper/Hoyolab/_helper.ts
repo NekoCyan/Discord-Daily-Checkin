@@ -37,6 +37,8 @@ export function HoyolabLangSelectMenu(container: ContainerBuilder, currentLang: 
   const selectMenu = new StringSelectMenuBuilder()
     .setCustomId('hoyolab-setup-lang-select')
     .setPlaceholder('Choose a language...')
+    .setMinValues(1)
+    .setMaxValues(1)
     .addOptions(
       HoyolabService.Constants.LANGS.map(({ name, label, value }) =>
         new StringSelectMenuOptionBuilder()
