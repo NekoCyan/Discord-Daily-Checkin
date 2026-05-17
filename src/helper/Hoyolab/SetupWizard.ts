@@ -41,15 +41,19 @@ export async function HoyolabSetupWizard(
   TextDisplay(container, '> ## Hoyolab Setup Wizard');
   Separator(container);
 
-  // Game select menu.
-  TextDisplay(container, '### Select games for daily check-in (and show in Profile):');
-  HoyolabGameSelectMenu(container, games, model.gameIdsToDailyCheck);
-  Separator(container);
-
   // Language select menu.
 
   TextDisplay(container, '### Select your preferred language:');
   HoyolabLangSelectMenu(container, lang);
+
+  // Game select menu.
+  TextDisplay(container, '### Select games for daily check-in (and show in Profile):');
+  HoyolabGameSelectMenu(container, games, model.gameIdsToDailyCheck);
+  TextDisplay(
+    container,
+    '-# Note: After selected, the bot will perform daily check-in once instantly.',
+  );
+  Separator(container);
 
   return int.SendOrEdit({
     components: [container],
