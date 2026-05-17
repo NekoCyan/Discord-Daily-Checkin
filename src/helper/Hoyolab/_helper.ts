@@ -64,7 +64,7 @@ export function HoyolabRewardSection(
     cnt: number;
   },
 ) {
-  return TextDisplay(container, [`### ${reward.name}`, `x${reward.cnt}`], reward.icon);
+  return TextDisplay(container, [`### ${reward.name} (x${reward.cnt})`], reward.icon);
 }
 
 export function HoyolabUserSection(container: ContainerBuilder, recordCard: GameRecordCard) {
@@ -74,11 +74,10 @@ export function HoyolabUserSection(container: ContainerBuilder, recordCard: Game
   return TextDisplay(
     container,
     [
-      `> ### ${card.game_name}`,
+      `> ${card.game_name} | Server: ${card.region_name}`,
       `### UID: ${card.game_role_id}`,
       `## ${card.nickname} (level ${card.level})`,
-      `Server: ${card.region_name}`,
-    ].join('\n'),
+    ],
     logo,
   );
 }
@@ -93,4 +92,57 @@ export function HoyolabProfilePrivateNotice(container: ContainerBuilder, withTog
           .setStyle(ButtonStyle.Primary)
       : undefined,
   ]);
+}
+
+export function HoyolabTodayRewardSection(
+  container: ContainerBuilder,
+  currentDay: number,
+  rewards: Parameters<typeof HoyolabRewardSection>[1][],
+) {
+  if (rewards.length === 0)
+    return TextDisplay(container, [
+      `> ## Today's Rewards (Day ${currentDay}):`,
+      '## *No rewards for today or waiting for next month refresh.*',
+    ]);
+
+  if (rewards.length === 1) {
+    const reward = rewards[0]!;
+    return TextDisplay(
+      container,
+      [`> ## Today's Rewards (Day ${currentDay}):`, `### ${reward.name} (x${reward.cnt})`],
+      reward.icon,
+    );
+  }
+
+  TextDisplay(container, `> ## Today's Rewards (Day ${currentDay}):`);
+  rewards.forEach((reward) => {
+    HoyolabRewardSection(container, reward);
+  });
+  return container;
+}
+
+export function HoyolabTomorrowRewardSection(
+  container: ContainerBuilder,
+  rewards: Parameters<typeof HoyolabRewardSection>[1][],
+) {
+  if (rewards.length === 0)
+    return TextDisplay(container, [
+      "> ## Tomorrow's Rewards:",
+      '## *No rewards for tomorrow or waiting for next month refresh.*',
+    ]);
+
+  if (rewards.length === 1) {
+    const reward = rewards[0]!;
+    return TextDisplay(
+      container,
+      [`> ## Tomorrow's Rewards:`, `### ${reward.name} (x${reward.cnt})`],
+      reward.icon,
+    );
+  }
+
+  TextDisplay(container, "> ## Tomorrow's Rewards:");
+  rewards.forEach((reward) => {
+    HoyolabRewardSection(container, reward);
+  });
+  return container;
 }

@@ -8,7 +8,8 @@ import { Separator, TextDisplay } from '../_helper.js';
 import { HoyolabSetVisibility } from './SetVisibility.js';
 import {
   HoyolabProfilePrivateNotice,
-  HoyolabRewardSection,
+  HoyolabTodayRewardSection,
+  HoyolabTomorrowRewardSection,
   HoyolabUserSection,
 } from './_helper.js';
 
@@ -106,25 +107,11 @@ export async function HoyolabProfile(
           // Separator.
           Separator(container);
           // Today's rewards.
-          TextDisplay(container, `> ## Today's Rewards (Day ${attendance.currentDay}):`);
-          attendance.todayRewards.forEach((reward) => {
-            HoyolabRewardSection(container, reward);
-          });
+          HoyolabTodayRewardSection(container, attendance.currentDay, attendance.todayRewards);
           // Separator.
           Separator(container);
           // Tomorrow's rewards.
-          TextDisplay(container, "> ## Tomorrow's Rewards:");
-          const tmrRewards = attendance.tomorrowRewards;
-          if (tmrRewards.length > 0) {
-            tmrRewards.forEach((reward) => {
-              HoyolabRewardSection(container, reward);
-            });
-          } else {
-            TextDisplay(
-              container,
-              '## *No rewards for tomorrow or waiting for next month refresh.*',
-            );
-          }
+          HoyolabTomorrowRewardSection(container, attendance.tomorrowRewards);
           // Separator.
           Separator(container);
           // Footer.
