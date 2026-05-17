@@ -69,6 +69,11 @@ export interface IHoyolabInstanceMethods {
    */
   isAccountSetted: () => boolean;
   /**
+   * Check if the user has set up their game IDs for daily check-in by verifying the presence of valid `gameIdsToDailyCheck` values.
+   * @returns A boolean indicating whether the user has set up their game IDs for daily check-in (true if `gameIdsToDailyCheck` is a non-empty array, false otherwise).
+   */
+  isGameIdsSetted: () => boolean;
+  /**
    * Set the preferred language for the user's Hoyolab interactions and content. This method updates the `lang` field with the provided language code.
    * @param lang The language code to set as the user's preferred language (e.g., 'en', 'zh-cn', etc.).
    * @param save [default=true] Whether to save the changes to the database immediately after updating in memory.

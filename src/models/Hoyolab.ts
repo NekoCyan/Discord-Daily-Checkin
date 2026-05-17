@@ -93,6 +93,9 @@ HoyolabSchema.methods = {
   isAccountSetted() {
     return Boolean(this.ltoken_v2 && this.ltuid_v2);
   },
+  isGameIdsSetted() {
+    return Array.isArray(this.gameIdsToDailyCheck) && this.gameIdsToDailyCheck.length > 0;
+  },
   async setLanguage(lang: string, save = true) {
     if (this.lang === lang) return;
 
