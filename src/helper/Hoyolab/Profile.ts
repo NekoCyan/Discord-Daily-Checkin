@@ -25,7 +25,9 @@ export async function HoyolabProfile(
   // Check if account token is set.
   if (int && !model.isAccountSetted())
     return int.SendOrEdit(
-      `You have not set your Hoyolab account cookie. Please use ${int.client.mentionSlashCommand('hoyolab set-cookie')} or ${int.client.mentionSlashCommand('hoyolab set-cookie-2')} to set it.`,
+      isSelf
+        ? `You have not set your Hoyolab account cookie. Please use ${int.client.mentionSlashCommand('hoyolab set-cookie')} or ${int.client.mentionSlashCommand('hoyolab set-cookie-2')} to set it.`
+        : `${target.toString()} has not set their Hoyolab account cookie.`,
     );
   // Check if public.
   if (!model.isPublic && !isSelf)
