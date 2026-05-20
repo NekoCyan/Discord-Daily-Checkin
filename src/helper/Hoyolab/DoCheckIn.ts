@@ -118,7 +118,9 @@ export async function HoyolabDoCheckIn(
       ].join('\n');
 
     contentConstruction.push({
-      checkInDay: attendanceInfo.currentDay,
+      // Since the attendance fetched before check-in, so the currentDay is actually the day
+      // that just checked in, and we need to add 1 to get the correct check-in day for message.
+      checkInDay: attendanceInfo.currentDay + 1,
       gameName: gameInfo.name,
       message: errMsg || `Check-in was successful!`,
     });
