@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.2] - 2026-05-25
+
+### Fixes
+
+- **`HoyolabDoCheckIn`: incorrect check-in day in completion message** — Attendance info is fetched before the check-in request, so `currentDay` reflects the previous day. The displayed check-in day is now incremented by 1 (`currentDay + 1`) to show the correct day that was just checked in.
+- **`HoyolabProfile`: wrong "cookie not set" message when viewing another user** — The not-set error previously always showed the self-directed prompt ("You have not set your cookie…") regardless of whose profile was being viewed. It now correctly shows `"<user> has not set their Hoyolab account cookie."` when the target is another user.
+
+---
+
 ## [1.1.1] - 2026-05-17
 
 ### Features
