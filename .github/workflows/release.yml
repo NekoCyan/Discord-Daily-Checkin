@@ -35,7 +35,7 @@ jobs:
 
       - name: Package assets
         run: |
-          RELEASE_NAME="release-${{ github.event.release.tag_name }}"
+          RELEASE_NAME="Discord-Daily-Checkin-${{ github.event.release.tag_name }}"
           mkdir -p "_release/$RELEASE_NAME"
           cp -r dist "./_release/$RELEASE_NAME/dist"
           cp -r src "./_release/$RELEASE_NAME/src"
