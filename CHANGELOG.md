@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.3] - 2026-06-08
+
+### Features
+
+- **Skip deleting ephemeral/DM messages on controller revocation** — When revoking an active `PageController`, the associated message is now only deleted if it is non-ephemeral, deletable, and belongs to a guild. Added guards for `message.flags.has('Ephemeral')` and `message.guildId` before calling `delete()`. This prevents errors caused by attempting to delete ephemeral messages or DM channel messages (DM channels are not cached due to disabled cache, which previously caused access errors).
+
+### Fixes
+
+- **`EndfieldDoCheckIn`: missing error handling and token invalidation** — The check-in flow now imports `ServiceError` and calls `service.revalidateCredAndFetchUser()` before proceeding (mirroring the existing behaviour in `EndfieldProfile`). If revalidation returns an unauthorized token, the stored token and credentials are reset and the user is prompted to update their Endfield account token via the slash command. Other errors are logged and a user-friendly failure message is returned instead of the check-in proceeding with invalid state.
+
+---
+
 ## [1.1.2] - 2026-05-25
 
 ### Fixes
