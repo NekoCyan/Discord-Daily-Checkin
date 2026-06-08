@@ -323,7 +323,12 @@ class BaseInteraction<
     const existing = BaseInteraction.activeControllers.get(userId);
     if (existing) {
       existing.collector.stop('revoked');
-      if (existing.message.deletable) await existing.message.delete();
+      if (
+        !existing.message.flags.has('Ephemeral') &&
+        existing.message.deletable &&
+        existing.message.guildId
+      )
+        await existing.message.delete();
     }
 
     const int = this.interaction;
