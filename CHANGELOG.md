@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.4] - 2026-06-14
+
+### Features
+
+- **Catch and log message delete/edit errors** — `message.delete()` and `message.edit()` calls in `BaseInteraction` now have `.catch(logger.error)` attached, preventing unhandled promise rejections (e.g. message already deleted, API failures) from bubbling up and potentially crashing the process.
+- **Improved ephemeral/DM guards for controller lifecycle** — Expanded ephemeral guards across the `PageController` lifecycle: on controller revocation, the `guildId` requirement has been removed so deletions work outside guilds (non-ephemeral + deletable is sufficient); on session expiry, the expired-navigation UI is now skipped entirely for ephemeral messages and `message.edit()` is only called when `message.editable`.
+
+### Performance
+
+- **Reuse computed payload for page updates** — The navigation row and full page payload are now computed once and reused across both the follow-up and regular update branches in `PageController`, removing duplicate payload construction and eliminating potential inconsistencies between the two paths.
+
+---
+
 ## [1.1.3] - 2026-06-08
 
 ### Features
