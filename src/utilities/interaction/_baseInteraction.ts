@@ -325,7 +325,14 @@ class BaseInteraction<
       existing.collector.stop('revoked');
 
       if (!existing.message.flags.has('Ephemeral') && existing.message.deletable)
-        await existing.message.delete();
+        await existing.message
+          .delete()
+          .catch((e) =>
+            logger.error(
+              e,
+              `Failed to delete message for revoked page controller (userId: ${userId})`,
+            ),
+          );
     }
 
     const int = this.interaction;
@@ -420,7 +427,14 @@ class BaseInteraction<
           ? this.injectNavRow(lastPagePayload, disabledRow)
           : { components: [disabledRow] };
 
-        await message.edit(expiredPayload as unknown as MessageEditOptions);
+        await message
+          .edit(expiredPayload as unknown as MessageEditOptions)
+          .catch((e) =>
+            logger.error(
+              e,
+              `Failed to edit message for expired page controller (userId: ${userId})`,
+            ),
+          );
       }
     });
   }
