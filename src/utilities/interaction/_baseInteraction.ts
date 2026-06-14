@@ -391,21 +391,17 @@ class BaseInteraction<
         }
 
         const row = this.buildNavRow(pages, currentIndex, idPrefix, false, usedOnce);
+        const payload =
+          lastPagePayload !== null
+            ? this.injectNavRow(lastPagePayload, row)
+            : { components: [row] };
 
         if (isPageFetchResult(raw) && raw.meta.followUp !== undefined) {
           // Send a separate follow-up (e.g. plain content) without touching the
           // components-v2 page.
-          const pagePayload =
-            lastPagePayload !== null
-              ? this.injectNavRow(lastPagePayload, row)
-              : { components: [row] };
-          await i.update(pagePayload as unknown as InteractionEditReplyOptions);
+          await i.update(payload as unknown as InteractionEditReplyOptions);
           await i.followUp(raw.meta.followUp);
         } else {
-          const payload =
-            lastPagePayload !== null
-              ? this.injectNavRow(lastPagePayload, row)
-              : { components: [row] };
           await i.update(payload as unknown as InteractionUpdateOptions);
         }
       }
