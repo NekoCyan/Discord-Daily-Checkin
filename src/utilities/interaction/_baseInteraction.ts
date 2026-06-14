@@ -323,11 +323,8 @@ class BaseInteraction<
     const existing = BaseInteraction.activeControllers.get(userId);
     if (existing) {
       existing.collector.stop('revoked');
-      if (
-        !existing.message.flags.has('Ephemeral') &&
-        existing.message.deletable &&
-        existing.message.guildId
-      )
+
+      if (!existing.message.flags.has('Ephemeral') && existing.message.deletable)
         await existing.message.delete();
     }
 
@@ -420,13 +417,15 @@ class BaseInteraction<
 
       BaseInteraction.activeControllers.delete(userId);
 
-      // Disable all nav buttons to signal the session has expired.
-      const disabledRow = this.buildNavRow(pages, currentIndex, idPrefix, true, usedOnce);
-      const expiredPayload = lastPagePayload
-        ? this.injectNavRow(lastPagePayload, disabledRow)
-        : { components: [disabledRow] };
+      if (!message.flags.has('Ephemeral') && message.editable) {
+        // Disable all nav buttons to signal the session has expired.
+        const disabledRow = this.buildNavRow(pages, currentIndex, idPrefix, true, usedOnce);
+        const expiredPayload = lastPagePayload
+          ? this.injectNavRow(lastPagePayload, disabledRow)
+          : { components: [disabledRow] };
 
-      if (message.editable) await message.edit(expiredPayload as unknown as MessageEditOptions);
+        await message.edit(expiredPayload as unknown as MessageEditOptions);
+      }
     });
   }
 }
