@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.5] - 2026-07-17
+
+### Features
+
+- **Handle extra Endfield check-in calendars** — `getCheckInInfo` now aggregates rewards from the normal, first-time, and limited-time activity calendars instead of only the base calendar. This improves today/tomorrow reward resolution (including post-claim behavior) and respects each activity's end time when showing tomorrow's rewards. Added typed attendance activity data (`startTs`, `endTs`, `calendar`).
+
+### Bumps
+
+- **Bumped `tsx` and `esbuild` versions** — Updated `tsx` from `^4.21.0` to `^4.22.4` and refreshed `pnpm-lock.yaml`, which now pins `tsx@4.22.4` and upgrades `esbuild` from `0.27.7` to `0.28.1` (including platform-specific binaries and integrity hashes). Also includes a minor formatting fix in the `package.json` `engines` block and cleanup of stale lockfile entries.
+
+---
+
 ## [1.1.4] - 2026-06-14
 
 ### Features
