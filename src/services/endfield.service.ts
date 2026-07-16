@@ -510,35 +510,65 @@ class EndfieldService extends BaseService {
   async getCheckInInfo() {
     const attendance = await this.getAttendance();
 
-    const calendar = attendance.calendar;
+    /**
+     * Endfield check-in has no missing reward days if passed,
+     * so just get the last available or done as today's reward.
+     */
+
+    const calendars = [attendance.calendar, attendance.first, attendance.activity?.calendar];
     const resources = attendance.resourceInfoMap;
 
     const todayRewards: ResourceInfo[] = [];
     const tmrRewards: ResourceInfo[] = [];
 
-    // Get calendar rewards.
-    const todayIndex = calendar.filter((x) => x.done || x.available).length - 1;
-    const today = calendar[todayIndex];
-    if (today && resources[today.awardId]) todayRewards.push(resources[today.awardId]!);
-    const tmr = calendar[todayIndex + 1];
-    if (tmr && resources[tmr.awardId]) tmrRewards.push(resources[tmr.awardId]!);
+    const resetTimezone = timestampStartOfTheDay(this.Constants.DAILY_RESET_TIMEZONE)!;
+    const nextDay = resetTimezone.add(1, 'day');
+    let dayIndexed = 0;
 
-    // Extra reward for first check-in.
-    const firstTimeCheckin = attendance.first.filter((item) => item.available && !item.done);
-    const firstToday = firstTimeCheckin[0];
-    if (firstToday && resources[firstToday.awardId])
-      todayRewards.push(resources[firstToday.awardId]!);
-    const firstTmr = firstTimeCheckin[1];
-    if (firstTmr && resources[firstTmr.awardId]) tmrRewards.push(resources[firstTmr.awardId]!);
+    /**
+     * normal:
+     * 0. attendance.calendar: Normal check-in rewards.
+     * extra:
+     * 1. attendance.first: First-time check-in rewards.
+     * 2. attendance.activity?.calendar: Limited-time event check-in rewards.
+     */
+    for (let i = 0; i < calendars.length; i++) {
+      const calendar = calendars[i]!;
+      if (!calendar) continue; // Skip non-existent calendars, just in case.
 
-    const moment = timestampStartOfTheDay(this.Constants.DAILY_RESET_TIMEZONE)!;
+      if (i === 0) {
+        const todayIndex = (dayIndexed = calendar.filter((x) => x.done || x.available).length - 1);
+        const today = calendar[todayIndex];
+        if (today && resources[today.awardId]) todayRewards.push(resources[today.awardId]!);
+        const tmr = calendar[todayIndex + 1];
+        if (tmr && resources[tmr.awardId]) tmrRewards.push(resources[tmr.awardId]!);
+        continue;
+      }
+
+      /**
+       * For extra:
+       * It's hard to track today or tomorrow reward (after claimed today)
+       * when user want to see today or tomorrow result via profile command.
+       * From now, user will be able to see the exact today & tomorrow reward with extra
+       * reward is come from bot's DM since it's automatically check-in.
+       */
+      const extraIndex = calendar.findIndex((item) => item.available && !item.done);
+      if (extraIndex === -1) continue; // No available extra reward today.
+      const extra = calendar[extraIndex];
+      if (extra && resources[extra.awardId]) todayRewards.push(resources[extra.awardId]!);
+      // Limited-time even check-in rewards has endTs, so compare with nextDay to check eligibility.
+      if (i === 2 && Math.floor(nextDay.valueOf() / 1000) > Number(attendance.activity!.endTs))
+        continue;
+      const extraTmr = calendar[extraIndex + 1];
+      if (extraTmr && resources[extraTmr.awardId]) tmrRewards.push(resources[extraTmr.awardId]!);
+    }
 
     return {
       isTodayChecked: attendance.hasToday,
       todayRewards: todayRewards,
       tomorrowRewards: tmrRewards,
-      currentDay: todayIndex + 1,
-      nextDayTimestamp: moment.add(1, 'day').valueOf(),
+      currentDay: dayIndexed + 1,
+      nextDayTimestamp: nextDay.valueOf(),
     };
   }
 
@@ -762,10 +792,30 @@ interface ResourceInfo {
   name: string;
   icon: string;
 }
+interface ActivityData {
+  name: string;
+  desc: string;
+  /**
+   * Timestamp as string.
+   */
+  startTs: string;
+  /**
+   * Timestamp as string.
+   */
+  endTs: string;
+  calendar: AttendanceItem[];
+}
 type GetAttendanceResponse = SkportResponse<{
   currentTs: string;
   calendar: AttendanceItem[];
+  /**
+   * First-time check-in rewards (It's still visible even done after that).
+   */
   first: AttendanceItem[];
+  /**
+   * Limited-time sign-in event.
+   */
+  activity?: ActivityData;
   resourceInfoMap: Record<string, ResourceInfo>;
   hasToday: boolean;
 }>;
