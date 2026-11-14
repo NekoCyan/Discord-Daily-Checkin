@@ -40,7 +40,7 @@
     "discord.js": "^14.26.4",
     "dotenv": "^17.4.2",
     "moment-timezone": "^0.6.2",
-    "mongoose": "^8.23.1",
+    "mongoose": "^8.24.7",
     "node-cron": "^4.2.1",
     "p-queue": "^9.2.0",
     "pino": "^10.3.1",
